@@ -1,1 +1,1 @@
-访问 https://example.com，验证页面中是否同时存在标题“Example Domain”和文本为“Learn more”的链接。只有实际观察到两者时才报告 PASS。
+Navigate to https://example.com and verify that the page contains the heading "Example Domain".
