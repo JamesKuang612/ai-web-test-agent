@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+
+# 浏览器认证信息和本地运行产物
+playwright/.auth/
+storage-state*.json
+test-results/
+playwright-report/
+.playwright-mcp/

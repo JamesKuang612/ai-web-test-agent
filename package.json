@@ -1,0 +1,25 @@
+{
+  "name": "ai-web-test-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "基于 OpenAI Agents SDK 和 Playwright MCP 的最小 Agent-first Web 测试项目",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prestart": "npm run build",
+    "start": "node --env-file-if-exists=.env --enable-source-maps dist/index.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@openai/agents": "^0.17.0",
+    "@playwright/mcp": "^0.0.80",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "typescript": "^7.0.2"
+  }
+}
