@@ -8,7 +8,9 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "prestart": "npm run build",
-    "start": "node --enable-source-maps dist/index.js"
+    "start": "node --enable-source-maps dist/index.js",
+    "preweb": "npm run build",
+    "web": "node --enable-source-maps dist/server.js"
   },
   "engines": {
     "node": ">=22"

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Web 测试助手</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <button id="home-button" class="brand" type="button" aria-label="返回测试用例列表">
+        <span class="brand-mark">A</span>
+        <span>
+          <strong>AI Web 测试助手</strong>
+          <small>本地测试控制台</small>
+        </span>
+      </button>
+      <span id="global-status" class="status neutral">就绪</span>
+    </header>
+
+    <main>
+      <section id="list-view" class="page">
+        <header class="page-header">
+          <div>
+            <p class="eyebrow">本地测试资产</p>
+            <h1>测试用例</h1>
+            <p class="page-description">管理自然语言用例、探索结果和可重复执行的 Playwright 脚本。</p>
+          </div>
+          <button id="create-button" class="primary" type="button">＋ 创建测试用例</button>
+        </header>
+
+        <section class="list-toolbar">
+          <span id="case-count">0 个测试用例</span>
+          <button id="refresh-button" class="text-button" type="button">刷新列表</button>
+        </section>
+        <div id="case-list" class="case-grid"></div>
+        <div id="list-empty" class="empty-state hidden">
+          <div class="empty-mark">⌁</div>
+          <h2>还没有测试用例</h2>
+          <p>点击右上角“创建测试用例”开始第一次智能体探索。</p>
+        </div>
+      </section>
+
+      <section id="detail-view" class="page hidden">
+        <button id="back-button" class="back-button" type="button">← 返回测试用例</button>
+        <header class="detail-header">
+          <div>
+            <p class="eyebrow">测试用例详情</p>
+            <h1 id="detail-id"></h1>
+          </div>
+          <div class="detail-actions">
+            <button id="agent-button" class="secondary" type="button">重新智能体探索</button>
+            <button id="converge-button" class="secondary strong" type="button">收敛 Playwright 脚本</button>
+            <button id="replay-button" class="primary" type="button">零模型重放</button>
+          </div>
+        </header>
+
+        <section class="metrics">
+          <article class="metric">
+            <span>整体状态</span>
+            <strong id="pipeline-status"></strong>
+          </article>
+          <article class="metric">
+            <span>探索结果</span>
+            <strong id="explore-status"></strong>
+          </article>
+          <article class="metric">
+            <span>MCP 调用</span>
+            <strong id="mcp-count"></strong>
+          </article>
+          <article class="metric">
+            <span>Codex 会话</span>
+            <strong id="thread-id"></strong>
+          </article>
+        </section>
+
+        <section class="panel instruction-panel">
+          <p class="eyebrow">自然语言测试用例</p>
+          <pre id="detail-instruction"></pre>
+        </section>
+
+        <section class="panel result-panel">
+          <p class="eyebrow">最近一次探索结果</p>
+          <pre id="final-result"></pre>
+        </section>
+
+        <section class="assets">
+          <article class="panel asset-card">
+            <div class="asset-header">
+              <div>
+                <p class="eyebrow">探索阶段产物</p>
+                <h2 id="draft-title">未收敛脚本</h2>
+                <p id="draft-description">由同一次智能体探索顺便生成，尚未证明可以稳定重放。</p>
+              </div>
+              <span id="draft-status" class="status neutral"></span>
+            </div>
+            <details>
+              <summary>查看 Playwright 脚本</summary>
+              <pre id="draft-source" class="code"></pre>
+            </details>
+          </article>
+
+          <article class="panel asset-card">
+            <div class="asset-header">
+              <div>
+                <p class="eyebrow">独立验证产物</p>
+                <h2 id="replay-title">收敛脚本</h2>
+                <p id="replay-description">通过独立 Playwright 验证后，可在不调用模型的情况下重复执行。</p>
+              </div>
+              <span id="replay-status" class="status neutral"></span>
+            </div>
+            <details>
+              <summary>查看 Playwright 脚本</summary>
+              <pre id="replay-source" class="code"></pre>
+            </details>
+          </article>
+        </section>
+
+        <section class="panel trace-panel">
+          <details>
+            <summary>探索工具轨迹 <span id="trace-count"></span></summary>
+            <div id="trace-list" class="trace-list"></div>
+          </details>
+        </section>
+
+        <section class="panel runs-panel">
+          <p class="eyebrow">执行历史</p>
+          <div id="run-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="create-dialog">
+      <form id="create-form" method="dialog">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">新建</p>
+            <h2>创建测试用例</h2>
+          </div>
+          <button id="dialog-close" class="icon-button" type="button" aria-label="关闭">×</button>
+        </div>
+        <label for="case-id">用例 ID</label>
+        <input id="case-id" autocomplete="off" />
+        <label for="instruction">自然语言测试用例</label>
+        <textarea
+          id="instruction"
+          rows="12"
+          placeholder="粘贴完整测试用例，包括初始 URL、操作步骤和预期结果。"
+        ></textarea>
+        <p class="hint">探索结果、MCP 轨迹和未收敛 Playwright 脚本会保存在本机 cases 目录。</p>
+        <div class="dialog-actions">
+          <button id="cancel-button" class="secondary" type="button">取消</button>
+          <button id="explore-button" class="primary" type="submit">开始智能体探索</button>
+        </div>
+      </form>
+    </dialog>
+
+    <section id="job-drawer" class="job-drawer hidden">
+      <div class="job-header">
+        <div>
+          <p class="eyebrow">当前任务</p>
+          <strong id="job-title"></strong>
+        </div>
+        <div class="job-header-actions">
+          <span id="job-status" class="status neutral"></span>
+          <button id="job-close" class="drawer-close" type="button" aria-label="关闭任务输出">×</button>
+        </div>
+      </div>
+      <pre id="job-output"></pre>
+    </section>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

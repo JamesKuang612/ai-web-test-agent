@@ -3,7 +3,7 @@
   "caseId": "jdy-v0-benchmark",
   "originalInstruction": "初始 URL：https://www.jiandaoyun.com/dashboard#/。\n搜索应用“jdy-v0-benchmark-20260902-1245”，如果没有搜索到则创建该应用，搜索到了则结束。最终验证该应用存在。",
   "createdAt": "2026-09-02T04:30:17.083Z",
-  "updatedAt": "2026-09-02T04:38:06.425Z",
+  "updatedAt": "2026-09-02T06:25:54.034Z",
   "pipelineStatus": "COMPLETED",
   "pipelineError": null,
   "threadId": "01a06061-d97b-7980-bc49-fda7887df4d6",
@@ -68,6 +68,33 @@
       "runAt": "2026-09-02T04:38:06.423Z",
       "threadId": "01a06067-9bb0-73d2-9279-358b6df3328b",
       "traceFile": "runs/1788323886422-agent-trace.json",
+      "error": null
+    },
+    {
+      "mode": "optimized",
+      "status": "PASS",
+      "durationMs": 5000,
+      "runAt": "2026-09-02T05:50:36.069Z",
+      "threadId": null,
+      "traceFile": null,
+      "error": null
+    },
+    {
+      "mode": "optimized",
+      "status": "PASS",
+      "durationMs": 4585,
+      "runAt": "2026-09-02T05:54:45.392Z",
+      "threadId": null,
+      "traceFile": null,
+      "error": null
+    },
+    {
+      "mode": "optimized",
+      "status": "PASS",
+      "durationMs": 9134,
+      "runAt": "2026-09-02T06:25:54.034Z",
+      "threadId": null,
+      "traceFile": null,
       "error": null
     }
   ]

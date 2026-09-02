@@ -6,11 +6,18 @@ import { Codex, type Thread, type ThreadItem } from '@openai/codex-sdk';
 
 import { extractTrace, sanitizeText, type TraceEntry } from './trace.js';
 
-export type AssetStatus = 'PENDING' | 'VALIDATED' | 'INVALID';
+export type AssetStatus = 'PENDING' | 'DRAFT' | 'VALIDATED' | 'INVALID';
 export type RunMode = 'agent' | 'conservative' | 'optimized';
+export type PipelineStatus =
+  | 'EXPLORING'
+  | 'EXPLORED'
+  | 'CONVERGING'
+  | 'COMPILING'
+  | 'COMPLETED'
+  | 'FAILED';
 
 export interface ValidationRecord {
-  status: Exclude<AssetStatus, 'PENDING'>;
+  status: Extract<AssetStatus, 'VALIDATED' | 'INVALID'>;
   durationMs: number;
   exitCode: number;
   runAt: string;
@@ -37,12 +44,12 @@ export interface RunRecord {
 }
 
 export interface CaseManifest {
-  version: 1;
+  version: 1 | 2;
   caseId: string;
   originalInstruction: string;
   createdAt: string;
   updatedAt: string;
-  pipelineStatus: 'COMPILING' | 'COMPLETED' | 'FAILED';
+  pipelineStatus: PipelineStatus;
   pipelineError: string | null;
   threadId: string | null;
   explore: {
@@ -73,6 +80,7 @@ export interface ExploreResult {
   items: ThreadItem[];
   trace: TraceEntry[];
   finalResponse: string;
+  draftSource: string | null;
   status: 'PASS' | 'FAIL';
   durationMs: number;
 }
@@ -110,12 +118,12 @@ export function createManifest(caseId: string, instruction: string): CaseManifes
     repairTraceFile: null,
   });
   return {
-    version: 1,
+    version: 2,
     caseId,
     originalInstruction: instruction,
     createdAt: now,
     updatedAt: now,
-    pipelineStatus: 'COMPILING',
+    pipelineStatus: 'EXPLORING',
     pipelineError: null,
     threadId: null,
     explore: null,
@@ -143,11 +151,29 @@ export async function readManifest(paths: CasePaths): Promise<CaseManifest> {
 
 /** 判断 Codex 最终答复是否以明确的 PASS 开始。 */
 function isPass(response: string): boolean {
-  return /^\s*(?:\*\*)?PASS(?:\*\*)?(?:[:：\s]|$)/i.test(response);
+  return /^\s*(?:\*\*)?PASS(?:\*\*)?(?![A-Z0-9_])/i.test(response);
+}
+
+/** 从 Explore 最终答复中分离测试结论与未验证 Playwright 草稿。 */
+function parseExploreResponse(response: string): {
+  finalResponse: string;
+  draftSource: string | null;
+} {
+  const result = response.match(/\[RESULT\]\s*([\s\S]*?)\s*\[\/RESULT\]/i)?.[1]?.trim();
+  const draft = response
+    .match(/\[DRAFT_PLAYWRIGHT\]\s*([\s\S]*?)\s*\[\/DRAFT_PLAYWRIGHT\]/i)?.[1]
+    ?.trim();
+  return {
+    finalResponse: result || response.trim(),
+    draftSource: draft ? normalizeSource(draft) : null,
+  };
 }
 
 /** 创建新的 Codex thread，并使用 Playwright MCP 执行自然语言测试。 */
-export async function explore(instruction: string): Promise<ExploreResult> {
+export async function explore(
+  instruction: string,
+  includeDraft = true,
+): Promise<ExploreResult> {
   const startedAt = Date.now();
   const thread = new Codex().startThread({
     workingDirectory: process.cwd(),
@@ -156,20 +182,46 @@ export async function explore(instruction: string): Promise<ExploreResult> {
     sandboxMode: 'read-only',
     approvalPolicy: 'never',
   });
+  const draftRequirement = includeDraft
+    ? `
+
+如果测试 PASS，请利用本次探索中已经获得的页面上下文，同时给出一份尚未验证的标准 @playwright/test TypeScript 草稿。草稿必须使用新的 browser context，通过 test.use 加载 ${AUTH_STATE}，使用本机 chrome channel，优先使用稳定 Playwright locator，不得使用 MCP 临时 ref 或 arbitrary sleep。不要为了生成草稿重新操作页面。
+
+最终答复严格使用以下格式：
+[RESULT]
+PASS 或 FAIL 开头的测试结论
+[/RESULT]
+[DRAFT_PLAYWRIGHT]
+PASS 时填写完整 TypeScript 源码；FAIL 时留空
+[/DRAFT_PLAYWRIGHT]`
+    : '\n\n最终答复必须以 PASS 或 FAIL 开头给出结论。';
   const turn = await thread.run(`${instruction}
 
-必须使用项目配置的 playwright MCP 浏览器工具执行任务。请自主观察、操作、恢复和验证；完成后必须调用 browser_snapshot 获取最终页面证据，并以 PASS 或 FAIL 开头给出结论。`);
+必须使用项目配置的 playwright MCP 浏览器工具执行任务。请自主观察、操作、恢复和验证；完成后必须调用 browser_snapshot 获取最终页面证据。${draftRequirement}`);
   const threadId = thread.id;
   if (!threadId) throw new Error('Codex 未返回 thread ID。');
+  const parsed = parseExploreResponse(turn.finalResponse);
   return {
     thread,
     threadId,
     items: turn.items,
     trace: extractTrace(turn.items),
-    finalResponse: turn.finalResponse,
-    status: isPass(turn.finalResponse) ? 'PASS' : 'FAIL',
+    finalResponse: parsed.finalResponse,
+    draftSource: parsed.draftSource,
+    status: isPass(parsed.finalResponse) ? 'PASS' : 'FAIL',
     durationMs: Date.now() - startedAt,
   };
+}
+
+/** 恢复已保存的 Codex thread，以便稍后生成或修复 Playwright 脚本。 */
+export function resumeAgentThread(threadId: string): Thread {
+  return new Codex().resumeThread(threadId, {
+    workingDirectory: process.cwd(),
+    model: MODEL,
+    modelReasoningEffort: REASONING_EFFORT,
+    sandboxMode: 'read-only',
+    approvalPolicy: 'never',
+  });
 }
 
 /** 去掉模型偶尔附加的单层 Markdown 代码围栏。 */
@@ -218,13 +270,7 @@ export async function repairOptimized(
   source: string,
   failureEvidence: string,
 ): Promise<{ source: string; items: ThreadItem[] }> {
-  const thread = new Codex().resumeThread(threadId, {
-    workingDirectory: process.cwd(),
-    model: MODEL,
-    modelReasoningEffort: REASONING_EFFORT,
-    sandboxMode: 'read-only',
-    approvalPolicy: 'never',
-  });
+  const thread = resumeAgentThread(threadId);
   const turn = await thread.run(`Optimized Candidate 的 Fresh Playwright Validation 失败。请只修复一次，并返回完整 optimized.spec.ts 源码。
 
 原始 instruction：
