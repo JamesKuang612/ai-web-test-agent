@@ -1,0 +1,64 @@
+[
+  {
+    "sequence": 1,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://www.jiandaoyun.com/dashboard#/"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 2,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 3,
+    "server": "playwright",
+    "tool": "browser_type",
+    "arguments": {
+      "target": "e194",
+      "element": "应用搜索框",
+      "text": "jdy-v0-benchmark-20260902-1245"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 4,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 1
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 5,
+    "server": "playwright",
+    "tool": "browser_find",
+    "arguments": {
+      "text": "jdy-v0-benchmark-20260902-1245"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 6,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 12
+    },
+    "status": "completed",
+    "error": null
+  }
+]

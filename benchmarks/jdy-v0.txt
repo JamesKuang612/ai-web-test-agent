@@ -1,0 +1,2 @@
+初始 URL：https://www.jiandaoyun.com/dashboard#/。
+搜索应用“jdy-v0-benchmark-20260902-1245”，如果没有搜索到则创建该应用，搜索到了则结束。最终验证该应用存在。

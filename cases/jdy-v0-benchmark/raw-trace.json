@@ -1,0 +1,256 @@
+[
+  {
+    "sequence": 1,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://www.jiandaoyun.com/dashboard#/"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 2,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 3,
+    "server": "playwright",
+    "tool": "browser_type",
+    "arguments": {
+      "target": "e194",
+      "element": "应用搜索框",
+      "text": "jdy-v0-benchmark-20260902-1245"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 4,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 1
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 5,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 10
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 6,
+    "server": "playwright",
+    "tool": "browser_type",
+    "arguments": {
+      "target": "e194",
+      "element": "应用搜索框",
+      "text": ""
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 7,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 1
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 8,
+    "server": "playwright",
+    "tool": "browser_find",
+    "arguments": {
+      "text": "新建应用"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 9,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "target": "e183",
+      "depth": 6
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 10,
+    "server": "playwright",
+    "tool": "browser_press_key",
+    "arguments": {
+      "key": "Escape"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 11,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "e185",
+      "element": "我的应用标题"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 12,
+    "server": "playwright",
+    "tool": "browser_find",
+    "arguments": {
+      "text": "新建应用"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 13,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "e649",
+      "element": "新建应用按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 14,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 10
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 15,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "e675",
+      "element": "创建空白应用"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 16,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 12
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 17,
+    "server": "playwright",
+    "tool": "browser_type",
+    "arguments": {
+      "target": "e783",
+      "element": "应用名称输入框",
+      "text": "jdy-v0-benchmark-20260902-1245"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 18,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "e808",
+      "element": "创建应用确定按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 19,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "text": "jdy-v0-benchmark-20260902-1245"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 20,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://www.jiandaoyun.com/dashboard#/"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 21,
+    "server": "playwright",
+    "tool": "browser_find",
+    "arguments": {
+      "text": "请输入名称来搜索"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 22,
+    "server": "playwright",
+    "tool": "browser_type",
+    "arguments": {
+      "target": "e1088",
+      "element": "应用搜索框",
+      "text": "jdy-v0-benchmark-20260902-1245"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 23,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "text": "jdy-v0-benchmark-20260902-1245"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 24,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "target": "e1077",
+      "depth": 12
+    },
+    "status": "completed",
+    "error": null
+  }
+]
