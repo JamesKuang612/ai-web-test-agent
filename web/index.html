@@ -48,10 +48,34 @@
             <p class="eyebrow">测试用例详情</p>
             <h1 id="detail-id"></h1>
           </div>
-          <div class="detail-actions">
-            <button id="agent-button" class="secondary" type="button">重新智能体探索</button>
-            <button id="converge-button" class="secondary strong" type="button">收敛 Playwright 脚本</button>
-            <button id="replay-button" class="primary" type="button">零模型重放</button>
+          <div class="detail-controls">
+            <div class="model-controls" aria-label="本次任务模型配置">
+              <label>
+                模型
+                <select id="detail-model">
+                  <option value="gpt-5.6-terra">5.6 Terra（推荐）</option>
+                  <option value="gpt-5.6-sol">5.6 Sol</option>
+                  <option value="gpt-5.6-luna">5.6 Luna</option>
+                  <option value="deepseek-v4-flash">DeepSeek V4 Flash</option>
+                  <option value="deepseek-v4-pro">DeepSeek V4 Pro</option>
+                  <option value="deepseek-v4-flash-vision-exp">DeepSeek V4 Flash Vision</option>
+                </select>
+              </label>
+              <label>
+                推理强度
+                <select id="detail-reasoning">
+                  <option value="low">低</option>
+                  <option value="medium" selected>中（推荐）</option>
+                  <option value="high">高</option>
+                  <option value="xhigh">极高</option>
+                  <option value="max">最大</option>
+                </select>
+              </label>
+            </div>
+            <div class="detail-actions">
+              <button id="agent-button" class="secondary" type="button">重新智能体探索</button>
+              <button id="generate-button" class="primary" type="button">生成 Playwright 脚本</button>
+            </div>
           </div>
         </header>
 
@@ -72,6 +96,10 @@
             <span>Codex 会话</span>
             <strong id="thread-id"></strong>
           </article>
+          <article class="metric">
+            <span>探索模型</span>
+            <strong id="explore-model"></strong>
+          </article>
         </section>
 
         <section class="panel instruction-panel">
@@ -84,35 +112,22 @@
           <pre id="final-result"></pre>
         </section>
 
-        <section class="assets">
+        <section class="assets single">
           <article class="panel asset-card">
             <div class="asset-header">
               <div>
-                <p class="eyebrow">探索阶段产物</p>
-                <h2 id="draft-title">未收敛脚本</h2>
-                <p id="draft-description">由同一次智能体探索顺便生成，尚未证明可以稳定重放。</p>
+                <p class="eyebrow">可重复执行资产</p>
+                <h2>Playwright 脚本</h2>
+                <p>恢复原 Codex 探索会话做定向校准，只生成目标脚本，最后由 Runtime 独立验证。</p>
+                <p id="script-config" class="asset-config"></p>
               </div>
-              <span id="draft-status" class="status neutral"></span>
+              <span id="script-status" class="status neutral"></span>
             </div>
             <details>
               <summary>查看 Playwright 脚本</summary>
-              <pre id="draft-source" class="code"></pre>
+              <pre id="script-source" class="code"></pre>
             </details>
-          </article>
-
-          <article class="panel asset-card">
-            <div class="asset-header">
-              <div>
-                <p class="eyebrow">独立验证产物</p>
-                <h2 id="replay-title">收敛脚本</h2>
-                <p id="replay-description">通过独立 Playwright 验证后，可在不调用模型的情况下重复执行。</p>
-              </div>
-              <span id="replay-status" class="status neutral"></span>
-            </div>
-            <details>
-              <summary>查看 Playwright 脚本</summary>
-              <pre id="replay-source" class="code"></pre>
-            </details>
+            <button id="script-replay-button" class="primary replay-action" type="button">零模型重放</button>
           </article>
         </section>
 
@@ -147,7 +162,30 @@
           rows="12"
           placeholder="粘贴完整测试用例，包括初始 URL、操作步骤和预期结果。"
         ></textarea>
-        <p class="hint">探索结果、MCP 轨迹和未收敛 Playwright 脚本会保存在本机 cases 目录。</p>
+        <div class="dialog-model-grid">
+          <label>
+            探索模型
+            <select id="create-model">
+              <option value="gpt-5.6-terra" selected>5.6 Terra（推荐）</option>
+              <option value="gpt-5.6-sol">5.6 Sol</option>
+              <option value="gpt-5.6-luna">5.6 Luna</option>
+              <option value="deepseek-v4-flash">DeepSeek V4 Flash</option>
+              <option value="deepseek-v4-pro">DeepSeek V4 Pro</option>
+              <option value="deepseek-v4-flash-vision-exp">DeepSeek V4 Flash Vision</option>
+            </select>
+          </label>
+          <label>
+            推理强度
+            <select id="create-reasoning">
+              <option value="low">低</option>
+              <option value="medium" selected>中（推荐）</option>
+              <option value="high">高</option>
+              <option value="xhigh">极高</option>
+              <option value="max">最大</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint">本阶段只执行智能体探索并保存结论和 MCP 轨迹，不生成 Playwright 脚本。</p>
         <div class="dialog-actions">
           <button id="cancel-button" class="secondary" type="button">取消</button>
           <button id="explore-button" class="primary" type="submit">开始智能体探索</button>

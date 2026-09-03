@@ -2,23 +2,24 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import {
+  agentConfig,
   createCaseDirectories,
   createManifest,
   explore,
-  generateAsset,
+  generateScript,
   getCasePaths,
+  getScriptPath,
   readManifest,
-  repairOptimized,
-  resumeAgentThread,
   saveManifest,
   validateSpec,
   writeJson,
   type AssetRecord,
+  type AgentConfig,
   type CaseManifest,
   type RunMode,
   type RunRecord,
 } from './core.js';
-import { extractTrace, printTrace } from './trace.js';
+import { printTrace } from './trace.js';
 
 /** 返回指定 CLI 选项后面的值。 */
 function option(args: string[], name: string): string | null {
@@ -46,6 +47,7 @@ function runRecord(
   threadId: string | null,
   traceFile: string | null,
   error: string | null,
+  config: AgentConfig | null = null,
 ): RunRecord {
   return {
     mode,
@@ -55,21 +57,28 @@ function runRecord(
     threadId,
     traceFile,
     error,
+    agentConfig: config,
   };
 }
 
-/** 写入并 Fresh Validation 一份 Playwright 资产。 */
-async function compileAsset(
-  kind: 'conservative' | 'optimized',
+/** 从命令行选项读取并校验本次 Codex 模型配置。 */
+function configFrom(args: string[]): AgentConfig {
+  return agentConfig(option(args, '--model'), option(args, '--reasoning'));
+}
+
+/** 对 Codex 已经写入的脚本执行独立 Fresh Validation。 */
+async function validateGeneratedScript(
   paths: ReturnType<typeof getCasePaths>,
   manifest: CaseManifest,
-  source: string,
+  config: AgentConfig,
 ): Promise<AssetRecord> {
-  const file = kind === 'conservative' ? paths.conservative : paths.optimized;
-  await writeFile(file, source, 'utf8');
+  const file = getScriptPath(paths, manifest);
+  const source = await readFile(file, 'utf8');
+  if (!source.trim()) throw new Error('Codex 生成的 Playwright 脚本为空。');
   console.log(`\n[验证脚本] ${path.relative(process.cwd(), file)}`);
   const validation = await validateSpec(file);
-  const record = manifest[kind];
+  const record = manifest.script;
+  record.agentConfig = config;
   record.status = validation.status;
   record.validation = validation;
   await saveManifest(paths, manifest);
@@ -77,8 +86,12 @@ async function compileAsset(
   return record;
 }
 
-/** 创建 case，执行 Explore，并在同一次 Codex turn 中保存未验证草稿。 */
-async function performExplore(caseId: string, instruction: string): Promise<void> {
+/** 创建 case，并让 Codex 只执行浏览器探索和结果判断。 */
+async function performExplore(
+  caseId: string,
+  instruction: string,
+  config: AgentConfig,
+): Promise<void> {
   const paths = getCasePaths(caseId);
   await createCaseDirectories(paths);
   await writeFile(paths.instruction, `${instruction}\n`, 'utf8');
@@ -87,8 +100,9 @@ async function performExplore(caseId: string, instruction: string): Promise<void
 
   try {
     console.log(`[创建并探索] ${caseId}`);
+    console.log(`[模型配置] ${config.model} / ${config.reasoningEffort}`);
     console.log('[探索] 创建新的 Codex thread');
-    const explored = await explore(instruction);
+    const explored = await explore(instruction, config);
     await writeJson(paths.rawTrace, explored.trace);
     manifest.threadId = explored.threadId;
     manifest.explore = {
@@ -97,20 +111,13 @@ async function performExplore(caseId: string, instruction: string): Promise<void
       finalResponse: explored.finalResponse,
       traceFile: 'raw-trace.json',
       mcpCalls: explored.trace.length,
+      agentConfig: config,
     };
     printTrace(explored.items);
     console.log(`\n[探索结果]\n${explored.finalResponse}`);
 
     if (explored.status !== 'PASS') {
-      throw new Error('Agent 探索未通过，未保存 Playwright 草稿。');
-    }
-
-    if (explored.draftSource) {
-      await writeFile(paths.conservative, explored.draftSource, 'utf8');
-      manifest.conservative.status = 'DRAFT';
-      console.log(`\n[探索草稿] ${path.relative(process.cwd(), paths.conservative)}`);
-    } else {
-      console.log('\n[探索草稿] Codex 未返回草稿，将在收敛阶段补充生成。');
+      throw new Error('Agent 探索未通过，未进入脚本生成阶段。');
     }
 
     manifest.pipelineStatus = 'EXPLORED';
@@ -131,94 +138,48 @@ async function exploreCommand(args: string[]): Promise<void> {
   const instructionFile = path.resolve(requiredOption(args, '--instruction'));
   const instruction = (await readFile(instructionFile, 'utf8')).trim();
   if (!instruction) throw new Error('instruction 文件不能为空。');
-  await performExplore(caseId, instruction);
+  await performExplore(caseId, instruction, configFrom(args));
 }
 
-/** 读取探索草稿；不存在时恢复原 thread 补充生成一个候选脚本。 */
-async function readOrGenerateDraft(
-  paths: ReturnType<typeof getCasePaths>,
-  manifest: CaseManifest,
-): Promise<string> {
-  try {
-    return await readFile(paths.conservative, 'utf8');
-  } catch {
-    if (!manifest.threadId || !manifest.explore) {
-      throw new Error('缺少 Explore thread 或 Trace，无法生成草稿。');
-    }
-    console.log('[生成草稿] Explore 未返回草稿，恢复原 Codex thread 补充生成。');
-    const trace = JSON.parse(await readFile(paths.rawTrace, 'utf8')) as Parameters<
-      typeof generateAsset
-    >[3];
-    const thread = resumeAgentThread(manifest.threadId);
-    const source = await generateAsset(
-      thread,
-      'optimized',
-      manifest.originalInstruction,
-      trace,
-    );
-    await writeFile(paths.conservative, source, 'utf8');
-    manifest.conservative.status = 'DRAFT';
-    await saveManifest(paths, manifest);
-    return source;
-  }
-}
-
-/** 验证探索草稿，失败时仅允许一次 Codex Agentic Repair。 */
-async function performConverge(caseId: string): Promise<void> {
+/** 恢复原探索会话，让 Codex 自主产出并验证唯一的 Playwright 脚本。 */
+async function performGenerate(caseId: string, config: AgentConfig): Promise<void> {
   const paths = getCasePaths(caseId);
   const manifest = await readManifest(paths);
   if (manifest.explore?.status !== 'PASS' || !manifest.threadId) {
-    throw new Error('只有探索成功的测试用例才能收敛脚本。');
+    throw new Error('只有探索成功的测试用例才能生成 Playwright 脚本。');
   }
 
-  manifest.pipelineStatus = 'CONVERGING';
+  manifest.version = 4;
+  manifest.script = {
+    file: 'playwright.spec.ts',
+    status: 'GENERATING',
+    agentConfig: config,
+    validation: null,
+  };
+  manifest.pipelineStatus = 'GENERATING_SCRIPT';
   manifest.pipelineError = null;
   await saveManifest(paths, manifest);
 
   try {
-    console.log(`[收敛脚本] ${caseId}`);
-    const trace = JSON.parse(await readFile(paths.rawTrace, 'utf8')) as Parameters<
-      typeof generateAsset
-    >[3];
-    let optimizedSource = await readOrGenerateDraft(paths, manifest);
-    const optimized = await compileAsset(
-      'optimized',
-      paths,
-      manifest,
-      optimizedSource,
-    );
+    console.log(`[生成 Playwright 脚本] ${caseId}`);
+    console.log(`[恢复 Codex 会话] ${manifest.threadId}`);
+    console.log(`[模型配置] ${config.model} / ${config.reasoningEffort}`);
+    console.log('[生成方式] 原 Codex 会话定向校准后只写入目标 spec，由 Runtime 独立验证');
+    const turn = await generateScript(manifest.threadId, paths.script, config);
+    printTrace(turn.items);
+    console.log(`\n[Codex 生成结果]\n${turn.finalResponse.trim()}`);
 
-    if (optimized.status === 'INVALID') {
-      console.log('\n[修复脚本] Fresh Validation 失败，进行唯一一次 Agentic Repair');
-      optimized.repaired = true;
-      const failure = optimized.validation?.error ?? 'Playwright 未返回失败详情。';
-      const repaired = await repairOptimized(
-        manifest.threadId,
-        manifest.originalInstruction,
-        trace,
-        optimizedSource,
-        failure,
-      );
-      optimizedSource = repaired.source;
-      const repairTrace = extractTrace(repaired.items);
-      optimized.repairMcpCalls = repairTrace.length;
-      if (repairTrace.length > 0) {
-        const repairTraceFile = path.join(paths.directory, 'optimized-repair-trace.json');
-        await writeJson(repairTraceFile, repairTrace);
-        optimized.repairTraceFile = 'optimized-repair-trace.json';
-      }
-      printTrace(repaired.items);
-      await compileAsset('optimized', paths, manifest, optimizedSource);
+    const script = await validateGeneratedScript(paths, manifest, config);
+    if (script.status !== 'VALIDATED') {
+      throw new Error('Codex 生成的脚本未通过独立 Fresh Validation。');
     }
 
-    if (manifest.optimized.status !== 'VALIDATED') {
-      throw new Error('脚本经过一次修复后仍未通过 Fresh Validation。');
-    }
     manifest.pipelineStatus = 'COMPLETED';
     manifest.pipelineError = null;
     await saveManifest(paths, manifest);
-    console.log(`\n[收敛完成] ${paths.optimized}`);
+    console.log(`\n[Playwright 脚本完成] ${paths.script}`);
   } catch (error) {
+    if (manifest.script.status === 'GENERATING') manifest.script.status = 'INVALID';
     manifest.pipelineStatus = 'FAILED';
     manifest.pipelineError = errorMessage(error);
     await saveManifest(paths, manifest);
@@ -226,36 +187,25 @@ async function performConverge(caseId: string): Promise<void> {
   }
 }
 
-/** 执行独立的 Playwright 脚本收敛阶段。 */
-async function convergeCommand(args: string[]): Promise<void> {
-  await performConverge(requiredOption(args, '--case'));
-}
-
-/** 保留一键 Explore → Converge 命令，兼容原有自动化调用。 */
-async function compileCommand(args: string[]): Promise<void> {
-  const caseId = requiredOption(args, '--case');
-  const instructionFile = path.resolve(requiredOption(args, '--instruction'));
-  const instruction = (await readFile(instructionFile, 'utf8')).trim();
-  if (!instruction) throw new Error('instruction 文件不能为空。');
-  await performExplore(caseId, instruction);
-  await performConverge(caseId);
+/** 执行独立的 Playwright 脚本生成阶段。 */
+async function generateCommand(args: string[]): Promise<void> {
+  await performGenerate(requiredOption(args, '--case'), configFrom(args));
 }
 
 /** 执行已经通过 Fresh Validation 的离线 Playwright 资产。 */
 async function runReplay(
-  mode: 'conservative' | 'optimized',
   paths: ReturnType<typeof getCasePaths>,
   manifest: CaseManifest,
 ): Promise<void> {
-  const asset = manifest[mode];
+  const asset = manifest.script;
   if (asset.status !== 'VALIDATED') {
-    throw new Error(`${mode} 脚本当前为 ${asset.status}，不可执行且不会回退到 Agent。`);
+    throw new Error(`Playwright 脚本当前为 ${asset.status}，不可执行且不会回退到 Agent。`);
   }
   console.log('[CODEX 调用次数] 0');
-  const result = await validateSpec(path.join(paths.directory, asset.file));
+  const result = await validateSpec(getScriptPath(paths, manifest));
   const status = result.status === 'VALIDATED' ? 'PASS' : 'FAIL';
   manifest.runs.push(
-    runRecord(mode, status, result.durationMs, null, null, result.error),
+    runRecord('script', status, result.durationMs, null, null, result.error),
   );
   await saveManifest(paths, manifest);
   console.log(`[零模型重放] ${status}`);
@@ -266,9 +216,11 @@ async function runReplay(
 async function runAgent(
   paths: ReturnType<typeof getCasePaths>,
   manifest: CaseManifest,
+  config: AgentConfig,
 ): Promise<void> {
   console.log('[Agent 探索] 创建新的 Codex thread');
-  const explored = await explore(manifest.originalInstruction, false);
+  console.log(`[模型配置] ${config.model} / ${config.reasoningEffort}`);
+  const explored = await explore(manifest.originalInstruction, config);
   const traceName = `${Date.now()}-agent-trace.json`;
   await writeJson(path.join(paths.runs, traceName), explored.trace);
   manifest.runs.push(
@@ -279,6 +231,7 @@ async function runAgent(
       explored.threadId,
       path.join('runs', traceName).replaceAll('\\', '/'),
       explored.status === 'PASS' ? null : explored.finalResponse,
+      config,
     ),
   );
   await saveManifest(paths, manifest);
@@ -292,31 +245,29 @@ async function runAgent(
 async function runCommand(args: string[]): Promise<void> {
   const caseId = requiredOption(args, '--case');
   const requestedMode = requiredOption(args, '--mode');
-  if (!['agent', 'conservative', 'optimized'].includes(requestedMode)) {
-    throw new Error('--mode 必须是 agent、conservative 或 optimized。');
+  if (!['agent', 'script'].includes(requestedMode)) {
+    throw new Error('--mode 必须是 agent 或 script。');
   }
   const mode = requestedMode as RunMode;
   const paths = getCasePaths(caseId);
   const manifest = await readManifest(paths);
-  if (mode === 'agent') await runAgent(paths, manifest);
-  else await runReplay(mode, paths, manifest);
+  if (mode === 'agent') await runAgent(paths, manifest, configFrom(args));
+  else await runReplay(paths, manifest);
 }
 
 /** 输出 CLI 的最小用法。 */
 function printUsage(): void {
   console.log(`用法：
-  npm start -- explore --case <id> --instruction <file>
-  npm start -- converge --case <id>
-  npm start -- run --case <id> --mode <agent|conservative|optimized>
-  npm start -- compile --case <id> --instruction <file>  # 兼容一键流程`);
+  npm start -- explore --case <id> --instruction <file> [--model <model>] [--reasoning <level>]
+  npm start -- generate --case <id> [--model <model>] [--reasoning <level>]
+  npm start -- run --case <id> --mode <agent|script>`);
 }
 
 /** 解析顶层命令并运行。 */
 async function main(): Promise<void> {
   const [command, ...args] = process.argv.slice(2);
   if (command === 'explore') return exploreCommand(args);
-  if (command === 'converge') return convergeCommand(args);
-  if (command === 'compile') return compileCommand(args);
+  if (command === 'generate') return generateCommand(args);
   if (command === 'run') return runCommand(args);
   printUsage();
   if (command) throw new Error(`未知命令：${command}`);

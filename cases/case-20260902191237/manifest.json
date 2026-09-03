@@ -1,0 +1,32 @@
+{
+  "version": 4,
+  "caseId": "case-20260902191237",
+  "originalInstruction": "准备一个插件，插件中访问一个可以获取当前请求IP的API，将返回报文里的当前IP地址通过返回字段回传出来。将此插件发布到简道云插件市场，安装备用。\n测试外链：\nhttps://test.jdydevelop.com/f/659950e5ae52aa707ac89b03\ncheck：运行插件，获取插件python runtime的IP，IP地址应为 ${jdy_plugin_ip}\n【用例场景】：插件运行时的出口IP\n ${jdy_plugin_ip}=47.97.99.12\n ${jodoo_plugin_ip}=13.251.218.18",
+  "createdAt": "2026-09-02T11:28:35.887Z",
+  "updatedAt": "2026-09-02T11:36:42.862Z",
+  "pipelineStatus": "FAILED",
+  "pipelineError": "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 9:02 PM.",
+  "threadId": null,
+  "explore": null,
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "PENDING",
+    "agentConfig": null,
+    "validation": null
+  },
+  "runs": [
+    {
+      "mode": "agent",
+      "status": "PASS",
+      "durationMs": 107558,
+      "runAt": "2026-09-02T11:36:42.859Z",
+      "threadId": "01a061e6-9136-7361-86a1-e1c3925d3fef",
+      "traceFile": "runs/1788349002857-agent-trace.json",
+      "error": null,
+      "agentConfig": {
+        "model": "gpt-5.6-terra",
+        "reasoningEffort": "medium"
+      }
+    }
+  ]
+}

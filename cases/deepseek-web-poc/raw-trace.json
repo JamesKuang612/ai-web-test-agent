@@ -1,0 +1,20 @@
+[
+  {
+    "sequence": 1,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://example.com"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 2,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  }
+]

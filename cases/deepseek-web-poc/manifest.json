@@ -1,0 +1,37 @@
+{
+  "version": 4,
+  "caseId": "deepseek-web-poc",
+  "originalInstruction": "打开 https://example.com，验证页面包含标题 Example Domain。",
+  "createdAt": "2026-09-02T12:24:31.760Z",
+  "updatedAt": "2026-09-02T12:26:06.123Z",
+  "pipelineStatus": "COMPLETED",
+  "pipelineError": null,
+  "threadId": "01a06213-fb9d-76e2-9a18-31ce00a2e3fc",
+  "explore": {
+    "status": "PASS",
+    "durationMs": 13496,
+    "finalResponse": "PASS: 页面验证通过。\n\n- 访问 `https://example.com/` 成功，`<title>` 为 `Example Domain`\n- 快照确认页面包含一级标题 `Example Domain`（以及预期示例文本与 \"Learn more\" 链接）\n- 最终页面证据已通过 `browser_snapshot` 获取，见上方快照输出（`heading \"Example Domain\" [level=1]`）",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 2,
+    "agentConfig": {
+      "model": "deepseek-v4-flash",
+      "reasoningEffort": "low"
+    }
+  },
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "VALIDATED",
+    "agentConfig": {
+      "model": "deepseek-v4-flash",
+      "reasoningEffort": "low"
+    },
+    "validation": {
+      "status": "VALIDATED",
+      "durationMs": 2671,
+      "exitCode": 0,
+      "runAt": "2026-09-02T12:26:06.121Z",
+      "error": null
+    }
+  },
+  "runs": []
+}

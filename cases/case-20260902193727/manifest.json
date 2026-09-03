@@ -1,0 +1,37 @@
+{
+  "version": 4,
+  "caseId": "case-20260902193727",
+  "originalInstruction": "准备一个插件，插件中访问一个可以获取当前请求IP的API，将返回报文里的当前IP地址通过返回字段回传出来。将此插件发布到简道云插件市场，安装备用。\n测试外链：\nhttps://test.jdydevelop.com/f/659950e5ae52aa707ac89b03\ncheck：运行插件，获取插件python runtime的IP，IP地址应为 ${jdy_plugin_ip}\n【用例场景】：插件运行时的出口IP\n ${jdy_plugin_ip}=47.97.99.12\n ${jodoo_plugin_ip}=13.251.218.18",
+  "createdAt": "2026-09-02T11:37:41.783Z",
+  "updatedAt": "2026-09-02T11:42:55.837Z",
+  "pipelineStatus": "COMPLETED",
+  "pipelineError": null,
+  "threadId": "01a061e9-1b29-7233-bfb2-2045b287fe62",
+  "explore": {
+    "status": "PASS",
+    "durationMs": 46865,
+    "finalResponse": "PASS：Python 插件运行成功，返回出口 IP `47.97.99.12`，与预期一致，页面显示“正常”。\n\n最终页面证据：[final-python-plugin-ip-evidence.yml](F:\\workspace\\EthanKuang\\ai-web-test-agent\\final-python-plugin-ip-evidence.yml)",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 5,
+    "agentConfig": {
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium"
+    }
+  },
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "VALIDATED",
+    "agentConfig": {
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium"
+    },
+    "validation": {
+      "status": "VALIDATED",
+      "durationMs": 7280,
+      "exitCode": 0,
+      "runAt": "2026-09-02T11:42:55.835Z",
+      "error": null
+    }
+  },
+  "runs": []
+}

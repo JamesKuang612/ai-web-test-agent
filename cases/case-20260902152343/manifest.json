@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "caseId": "case-20260902152343",
+  "originalInstruction": "### 0个已安装插件&0个自建插件\n\n**初始URL：** https://test.jdydevelop.com/dashboard#/\n\n**账密：1875931049@qq.com/Jdy123456\n\n**功能场景：** 插件新建-入口\n\n**测试步骤：**\n1.进入开放平台-插件管理页面，浏览空页面状态\n\n**预期结果（PC端）：**\ncheck：页面显示提示“暂未安装任何插件，去插件市场看看”",
+  "createdAt": "2026-09-02T07:33:27.503Z",
+  "updatedAt": "2026-09-02T07:43:42.590Z",
+  "pipelineStatus": "COMPLETED",
+  "pipelineError": null,
+  "threadId": "01a06109-86c1-7ae2-aca4-1a7504558985",
+  "explore": {
+    "status": "PASS",
+    "durationMs": 407665,
+    "finalResponse": "PASS：已确认0个已安装插件、0个自建插件。PC页面显示“暂未安装任何插件,去插件市场看看”（实际使用半角逗号），插件市场链接可见。已调用 browser_snapshot 获取最终页面证据。以下草稿尚未验证。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 24
+  },
+  "conservative": {
+    "file": "conservative.spec.ts",
+    "status": "DRAFT",
+    "validation": null,
+    "repaired": false,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  },
+  "optimized": {
+    "file": "optimized.spec.ts",
+    "status": "VALIDATED",
+    "validation": {
+      "status": "VALIDATED",
+      "durationMs": 19557,
+      "exitCode": 0,
+      "runAt": "2026-09-02T07:43:01.592Z",
+      "error": null
+    },
+    "repaired": true,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  },
+  "runs": [
+    {
+      "mode": "optimized",
+      "status": "PASS",
+      "durationMs": 22172,
+      "runAt": "2026-09-02T07:43:42.590Z",
+      "threadId": null,
+      "traceFile": null,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,609 @@
+[
+  {
+    "sequence": 1,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/dashboard#/"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 2,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 5
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 3,
+    "server": "playwright",
+    "tool": "browser_type",
+    "arguments": {
+      "target": "f1e27",
+      "element": "手机号/邮箱输入框",
+      "text": "[REDACTED]"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 4,
+    "server": "playwright",
+    "tool": "browser_press_key",
+    "arguments": {
+      "key": "Tab"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 5,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 5
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 6,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "() => Array.from(document.querySelectorAll('input')).map((e,i)=>({i,type:e.type,name:e.name,placeholder:e.placeholder,aria:e.getAttribute('aria-label'),outer:e.outerHTML.slice(0,300)}))"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 7,
+    "server": "playwright",
+    "tool": "browser_type",
+    "arguments": {
+      "target": "input[type='password']",
+      "element": "密码输入框",
+      "text": "[REDACTED]"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 8,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "f1e41",
+      "element": "登录按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 9,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 10,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 3
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 11,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 10
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 12,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "() => Array.from(document.querySelectorAll('a')).map(a=>({text:(a.innerText||'').trim(),href:a.href})).filter(x=>x.text||x.href)"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 13,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "f2e59",
+      "element": "用户头像菜单"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 14,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 6
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 15,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "f2e322",
+      "element": "管理后台"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 16,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 2
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 17,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 18,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "f3e38",
+      "element": "产品中心菜单"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 19,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 1
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 20,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 7
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 21,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "f3e18",
+      "element": "顶部功能菜单"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 22,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 6
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 23,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "f3e1026",
+      "element": "开放平台菜单"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 24,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "() => performance.getEntriesByType('resource').map(e=>e.name).filter(x=>/\\.js(\\?|$)/.test(x)).slice(-30)"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 25,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => { const u='https://test.jdydevelop.com/static/platform/pc/corp-admin.js'; const s=await (await fetch(u)).text(); const q='插件管理'; const i=s.indexOf(q); return {len:s.length,i,snippet:i>=0?s.slice(Math.max(0,i-500),i+800):''}; }"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 26,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => { const s=await (await fetch('https://test.jdydevelop.com/static/platform/pc/corp-admin.js')).text(); const q='plugin.management'; let a=[],i=-1; while((i=s.indexOf(q,i+1))>=0)a.push(s.slice(i-250,i+500)); return a.slice(0,10); }"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 27,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => { const s=await (await fetch('https://test.jdydevelop.com/static/platform/pc/corp-admin.js')).text(); for(const q of ['暂未自建任何插件','新建插件','plugin-manage','plugin_manage','plugin_manage']) {const i=s.indexOf(q); if(i>=0)return {q,i,s:s.slice(i-600,i+1000)};} return 'none'; }"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 28,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => {const s=await (await fetch('https://test.jdydevelop.com/static/platform/pc/manifest.js')).text(); return {len:s.length,matches:(s.match(/[^\"']*plugin[^\"']*/gi)||[]).slice(0,50),head:s.slice(0,1500)}}"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 29,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => {const s=await (await fetch('https://test.jdydevelop.com/static/platform/pc/manifest.js')).text(); return s.slice(-2500)}"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 30,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => {const s=await (await fetch('https://test.jdydevelop.com/static/platform/pc/manifest.js')).text(); const i=s.indexOf('c.u='); return s.slice(i,i+2000)}"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 31,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => {const s=await (await fetch('https://test.jdydevelop.com/static/platform/pc/corp-admin.js')).text(); const qs=['open_platform','open-platform','openPlatform','plugin']; return Object.fromEntries(qs.map(q=>{let a=[],i=-1;while((i=s.indexOf(q,i+1))>=0&&a.length<8)a.push(s.slice(i-160,i+350));return[q,a]}));}"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 32,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => {const s=await (await fetch('https://test.jdydevelop.com/static/platform/pc/corp-admin.js')).text(); const re=/.{0,180}(?:plugin|插件).{0,180}/gi; let a=[],m;while((m=re.exec(s))&&a.length<100)a.push(m[0]);return a.filter(x=>/[#/:]|route|path|url/i.test(x)).slice(-30)}"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 33,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/dashboard#/"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 34,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 1
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 35,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 3
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 36,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "f9e33",
+      "element": "顶部应用入口"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 37,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 1
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 38,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 39,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => {const s=await (await fetch('https://test.jdydevelop.com/static/platform/pc/corp-admin.js')).text(); const re=/.{0,400}(?:plugin[_-](?:manage|market)|pluginManage|pluginMarket|plg_manage|custom_plugin|self.?plugin).{0,600}/gi;let a=[],m;while((m=re.exec(s))&&a.length<20)a.push(m[0]);return a;}"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 40,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/open_platform#/plugin"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 41,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/openapi#/plugin"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 42,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/portal/open_platform#/plugin"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 43,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/open-platform#/plugin"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 44,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/dashboard#/"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 45,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 1
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 46,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": false,
+      "depth": 10
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 47,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => {const urls=['https://test.jdydevelop.com/static/app/pc/common.js','https://test.jdydevelop.com/static/app/pc/assets.js','https://test.jdydevelop.com/static/app/pc/jdy-biz.js'];let out=[];for(const u of urls){const s=await (await fetch(u)).text();for(const q of ['暂未自建任何插件','新建插件','插件管理']){const i=s.indexOf(q);if(i>=0)out.push({u,q,i,s:s.slice(i-400,i+600)})}}return out;}"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 48,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => {const p=['/plugin','/plugins','/plugin_manage','/developer','/dev','/open','/portal/plugin','/portal/plugins','/portal/developer','/dashboard/plugin','/dashboard/plugins','/dashboard/open_platform','/app/plugin','/app/plugins'];const r=[];for(const x of p){const z=await fetch(x,{redirect:'manual'});r.push([x,z.status,z.headers.get('location'),z.headers.get('content-type')]);}return r;}"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 49,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "async () => {const p=['/plugin','/plugins','/plugin_manage','/developer','/dev','/open','/portal/plugin','/portal/plugins','/portal/developer','/dashboard/plugin','/dashboard/plugins','/dashboard/open_platform','/app/plugin','/app/plugins'];const r=[];for(const x of p){const s=await (await fetch(x)).text();r.push([x,s.match(/<title[^>]*>([^<]*)/i)?.[1],(s.match(/<script[^>]+src=\"([^\"]+)/g)||[]).slice(-4)]);}return r;}"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 50,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/open"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 51,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 1
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 52,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 53,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "f16e48",
+      "element": "插件管理菜单"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 54,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 1
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 55,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 56,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "f16e91",
+      "element": "自建插件菜单"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 57,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 1
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 58,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 10
+    },
+    "status": "completed",
+    "error": null
+  }
+]

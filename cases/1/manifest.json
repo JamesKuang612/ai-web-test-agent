@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "caseId": "1",
+  "originalInstruction": "1、准备一个插件，插件中访问一个可以获取当前请求IP的API，将返回报文里的当前IP地址通过返回字段回传出来。将此插件发布到简道云插件市场，安装备用。\n测试外链：\nhttps://test.jdydevelop.com/f/659950e5ae52aa707ac89b03\ncheck：运行插件，获取插件nodejs runtime的IP，IP地址应为 ${jdy_plugin_ip}",
+  "createdAt": "2026-09-02T06:07:11.622Z",
+  "updatedAt": "2026-09-02T06:15:29.977Z",
+  "pipelineStatus": "FAILED",
+  "pipelineError": "Agent Explore 未通过，未生成离线资产。",
+  "threadId": "01a060ba-9936-7380-bbb6-836edc45f5f5",
+  "explore": {
+    "status": "FAIL",
+    "durationMs": 498349,
+    "finalResponse": "FAIL（全流程未完成，运行检查通过）。\n\n使用项目 Playwright MCP 两次运行现有 Node.js 插件，均返回 `47.97.99.12`，与页面固定预期一致，显示“正常”。已调用 `browser_snapshot` 获取最终证据。\n\n后台要求登录，未完成插件创建、发布和安装。需补充可用后台登录态及 `${jdy_plugin_ip}` 的实际值才能继续。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 21
+  },
+  "conservative": {
+    "file": "conservative.spec.ts",
+    "status": "PENDING",
+    "validation": null,
+    "repaired": false,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  },
+  "optimized": {
+    "file": "optimized.spec.ts",
+    "status": "PENDING",
+    "validation": null,
+    "repaired": false,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  },
+  "runs": []
+}

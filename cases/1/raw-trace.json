@@ -1,0 +1,210 @@
+[
+  {
+    "sequence": 1,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/f/659950e5ae52aa707ac89b03"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 2,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 3,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "e47",
+      "element": "Nodejs-市场插件IP 下的 nodejs 运行按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 4,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 5,
+    "server": "playwright",
+    "tool": "browser_network_requests",
+    "arguments": {
+      "static": false
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 6,
+    "server": "playwright",
+    "tool": "browser_network_request",
+    "arguments": {
+      "index": 29,
+      "part": "request-body"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 7,
+    "server": "playwright",
+    "tool": "browser_network_request",
+    "arguments": {
+      "index": 29,
+      "part": "response-body"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 8,
+    "server": "playwright",
+    "tool": "browser_network_request",
+    "arguments": {
+      "index": 26,
+      "part": "response-body"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 9,
+    "server": "playwright",
+    "tool": "browser_tabs",
+    "arguments": {
+      "action": "new",
+      "url": "https://test.jdydevelop.com"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 10,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 11,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "e7",
+      "element": "简道云登录入口，用于检查现有开发和安装权限"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 12,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 13,
+    "server": "playwright",
+    "tool": "browser_find",
+    "arguments": {
+      "regex": "登录|工作台|企业|账号|密码|插件"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 14,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 15,
+    "server": "playwright",
+    "tool": "browser_tabs",
+    "arguments": {
+      "action": "select",
+      "index": 0
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 16,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/f/659950e5ae52aa707ac89b03"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 17,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 18,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "text": "Nodejs-市场插件IP"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 19,
+    "server": "playwright",
+    "tool": "browser_find",
+    "arguments": {
+      "text": "nodejs"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 20,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "target": "f1e50",
+      "element": "nodejs 插件运行按钮，重新验证出口 IP"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 21,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  }
+]

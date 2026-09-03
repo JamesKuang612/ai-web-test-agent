@@ -2,15 +2,50 @@ import { spawn } from 'node:child_process';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import { Codex, type Thread, type ThreadItem } from '@openai/codex-sdk';
+import { Codex, type RunResult, type Thread, type ThreadItem } from '@openai/codex-sdk';
 
 import { extractTrace, sanitizeText, type TraceEntry } from './trace.js';
 
-export type AssetStatus = 'PENDING' | 'DRAFT' | 'VALIDATED' | 'INVALID';
-export type RunMode = 'agent' | 'conservative' | 'optimized';
+export const AGENT_MODELS = [
+  'gpt-5.6-terra',
+  'gpt-5.6-sol',
+  'gpt-5.6-luna',
+  'deepseek-v4-flash',
+  'deepseek-v4-pro',
+  'deepseek-v4-flash-vision-exp',
+] as const;
+const DEEPSEEK_MODELS = new Set<AgentModel>([
+  'deepseek-v4-flash',
+  'deepseek-v4-pro',
+  'deepseek-v4-flash-vision-exp',
+]);
+export const GPT_REASONING_EFFORTS = ['low', 'medium', 'high', 'xhigh', 'max'] as const;
+export const DEEPSEEK_REASONING_EFFORTS = ['low', 'high', 'max'] as const;
+export const REASONING_EFFORTS = GPT_REASONING_EFFORTS;
+
+export type AgentModel = (typeof AGENT_MODELS)[number];
+export type ReasoningEffort =
+  | (typeof GPT_REASONING_EFFORTS)[number]
+  | (typeof DEEPSEEK_REASONING_EFFORTS)[number];
+export interface AgentConfig {
+  model: AgentModel;
+  reasoningEffort: ReasoningEffort;
+}
+
+export const DEFAULT_AGENT_CONFIG: AgentConfig = {
+  model: 'gpt-5.6-terra',
+  reasoningEffort: 'medium',
+};
+
+export type AssetStatus = 'PENDING' | 'DRAFT' | 'GENERATING' | 'VALIDATED' | 'INVALID';
+export type RunMode = 'agent' | 'script' | 'conservative' | 'optimized';
 export type PipelineStatus =
   | 'EXPLORING'
   | 'EXPLORED'
+  | 'GENERATING_SCRIPT'
+  | 'GENERATING_FAITHFUL'
+  | 'FAITHFUL_READY'
+  | 'GENERATING_OPTIMIZED'
   | 'CONVERGING'
   | 'COMPILING'
   | 'COMPLETED'
@@ -27,10 +62,8 @@ export interface ValidationRecord {
 export interface AssetRecord {
   file: string;
   status: AssetStatus;
+  agentConfig: AgentConfig | null;
   validation: ValidationRecord | null;
-  repaired: boolean;
-  repairMcpCalls: number;
-  repairTraceFile: string | null;
 }
 
 export interface RunRecord {
@@ -41,10 +74,11 @@ export interface RunRecord {
   threadId: string | null;
   traceFile: string | null;
   error: string | null;
+  agentConfig: AgentConfig | null;
 }
 
 export interface CaseManifest {
-  version: 1 | 2;
+  version: 1 | 2 | 3 | 4;
   caseId: string;
   originalInstruction: string;
   createdAt: string;
@@ -58,9 +92,11 @@ export interface CaseManifest {
     finalResponse: string;
     traceFile: string;
     mcpCalls: number;
+    agentConfig?: AgentConfig | null;
   } | null;
-  conservative: AssetRecord;
-  optimized: AssetRecord;
+  script: AssetRecord;
+  conservative?: AssetRecord;
+  optimized?: AssetRecord;
   runs: RunRecord[];
 }
 
@@ -69,25 +105,45 @@ export interface CasePaths {
   instruction: string;
   manifest: string;
   rawTrace: string;
+  script: string;
   conservative: string;
   optimized: string;
   runs: string;
 }
 
 export interface ExploreResult {
-  thread: Thread;
   threadId: string;
   items: ThreadItem[];
   trace: TraceEntry[];
   finalResponse: string;
-  draftSource: string | null;
   status: 'PASS' | 'FAIL';
   durationMs: number;
+  agentConfig: AgentConfig;
 }
 
-const MODEL = 'gpt-5.6-sol';
-const REASONING_EFFORT = 'max';
-const AUTH_STATE = 'playwright/.auth/jdy.json';
+/** 返回指定模型实际支持的推理强度档位。 */
+export function reasoningEffortsFor(model: AgentModel): readonly ReasoningEffort[] {
+  return DEEPSEEK_MODELS.has(model) ? DEEPSEEK_REASONING_EFFORTS : GPT_REASONING_EFFORTS;
+}
+
+/** 校验来自 CLI 或前端的模型配置，避免无效值和静默降级。 */
+export function agentConfig(model?: string | null, effort?: string | null): AgentConfig {
+  const selectedModel = model ?? DEFAULT_AGENT_CONFIG.model;
+  const selectedEffort = effort ?? DEFAULT_AGENT_CONFIG.reasoningEffort;
+  if (!AGENT_MODELS.includes(selectedModel as AgentModel)) {
+    throw new Error(`不支持的模型：${selectedModel}。`);
+  }
+  const supportedEfforts = reasoningEffortsFor(selectedModel as AgentModel);
+  if (!supportedEfforts.includes(selectedEffort as ReasoningEffort)) {
+    throw new Error(
+      `模型 ${selectedModel} 不支持推理强度 ${selectedEffort}，可选：${supportedEfforts.join('、')}。`,
+    );
+  }
+  return {
+    model: selectedModel as AgentModel,
+    reasoningEffort: selectedEffort as ReasoningEffort,
+  };
+}
 
 /** 校验 case ID 并返回其本地资产路径。 */
 export function getCasePaths(caseId: string): CasePaths {
@@ -100,6 +156,7 @@ export function getCasePaths(caseId: string): CasePaths {
     instruction: path.join(directory, 'instruction.txt'),
     manifest: path.join(directory, 'manifest.json'),
     rawTrace: path.join(directory, 'raw-trace.json'),
+    script: path.join(directory, 'playwright.spec.ts'),
     conservative: path.join(directory, 'conservative.spec.ts'),
     optimized: path.join(directory, 'optimized.spec.ts'),
     runs: path.join(directory, 'runs'),
@@ -109,16 +166,8 @@ export function getCasePaths(caseId: string): CasePaths {
 /** 创建一份尚未执行的最小 case manifest。 */
 export function createManifest(caseId: string, instruction: string): CaseManifest {
   const now = new Date().toISOString();
-  const asset = (file: string): AssetRecord => ({
-    file,
-    status: 'PENDING',
-    validation: null,
-    repaired: false,
-    repairMcpCalls: 0,
-    repairTraceFile: null,
-  });
   return {
-    version: 2,
+    version: 4,
     caseId,
     originalInstruction: instruction,
     createdAt: now,
@@ -127,9 +176,18 @@ export function createManifest(caseId: string, instruction: string): CaseManifes
     pipelineError: null,
     threadId: null,
     explore: null,
-    conservative: asset('conservative.spec.ts'),
-    optimized: asset('optimized.spec.ts'),
+    script: createAssetRecord('playwright.spec.ts'),
     runs: [],
+  };
+}
+
+/** 创建一条尚未生成的 Playwright 脚本资产记录。 */
+function createAssetRecord(file: string): AssetRecord {
+  return {
+    file,
+    status: 'PENDING',
+    agentConfig: null,
+    validation: null,
   };
 }
 
@@ -146,7 +204,27 @@ export async function saveManifest(paths: CasePaths, manifest: CaseManifest): Pr
 
 /** 读取一个已经编译或正在编译的 case manifest。 */
 export async function readManifest(paths: CasePaths): Promise<CaseManifest> {
-  return JSON.parse(await readFile(paths.manifest, 'utf8')) as CaseManifest;
+  const manifest = JSON.parse(await readFile(paths.manifest, 'utf8')) as CaseManifest;
+  const legacyAsset =
+    manifest.optimized?.status === 'VALIDATED'
+      ? manifest.optimized
+      : manifest.conservative?.status === 'VALIDATED'
+        ? manifest.conservative
+        : null;
+  manifest.script ??= legacyAsset
+    ? { ...legacyAsset }
+    : createAssetRecord('playwright.spec.ts');
+  manifest.script.agentConfig ??= null;
+  for (const run of manifest.runs) run.agentConfig ??= null;
+  return manifest;
+}
+
+/** 安全解析 manifest 中记录的脚本文件，防止路径逃出当前 case。 */
+export function getScriptPath(paths: CasePaths, manifest: CaseManifest): string {
+  const file = path.resolve(paths.directory, manifest.script.file);
+  const prefix = `${paths.directory}${path.sep}`;
+  if (!file.startsWith(prefix)) throw new Error('Playwright 脚本路径无效。');
+  return file;
 }
 
 /** 判断 Codex 最终答复是否以明确的 PASS 开始。 */
@@ -154,143 +232,87 @@ function isPass(response: string): boolean {
   return /^\s*(?:\*\*)?PASS(?:\*\*)?(?![A-Z0-9_])/i.test(response);
 }
 
-/** 从 Explore 最终答复中分离测试结论与未验证 Playwright 草稿。 */
-function parseExploreResponse(response: string): {
-  finalResponse: string;
-  draftSource: string | null;
-} {
-  const result = response.match(/\[RESULT\]\s*([\s\S]*?)\s*\[\/RESULT\]/i)?.[1]?.trim();
-  const draft = response
-    .match(/\[DRAFT_PLAYWRIGHT\]\s*([\s\S]*?)\s*\[\/DRAFT_PLAYWRIGHT\]/i)?.[1]
-    ?.trim();
-  return {
-    finalResponse: result || response.trim(),
-    draftSource: draft ? normalizeSource(draft) : null,
-  };
-}
-
 /** 创建新的 Codex thread，并使用 Playwright MCP 执行自然语言测试。 */
-export async function explore(
-  instruction: string,
-  includeDraft = true,
-): Promise<ExploreResult> {
+export async function explore(instruction: string, config: AgentConfig): Promise<ExploreResult> {
   const startedAt = Date.now();
-  const thread = new Codex().startThread({
+  const thread = createCodex(config).startThread({
     workingDirectory: process.cwd(),
-    model: MODEL,
-    modelReasoningEffort: REASONING_EFFORT,
+    model: config.model,
+    modelReasoningEffort: config.reasoningEffort,
     sandboxMode: 'read-only',
     approvalPolicy: 'never',
   });
-  const draftRequirement = includeDraft
-    ? `
-
-如果测试 PASS，请利用本次探索中已经获得的页面上下文，同时给出一份尚未验证的标准 @playwright/test TypeScript 草稿。草稿必须使用新的 browser context，通过 test.use 加载 ${AUTH_STATE}，使用本机 chrome channel，优先使用稳定 Playwright locator，不得使用 MCP 临时 ref 或 arbitrary sleep。不要为了生成草稿重新操作页面。
-
-最终答复严格使用以下格式：
-[RESULT]
-PASS 或 FAIL 开头的测试结论
-[/RESULT]
-[DRAFT_PLAYWRIGHT]
-PASS 时填写完整 TypeScript 源码；FAIL 时留空
-[/DRAFT_PLAYWRIGHT]`
-    : '\n\n最终答复必须以 PASS 或 FAIL 开头给出结论。';
   const turn = await thread.run(`${instruction}
 
-必须使用项目配置的 playwright MCP 浏览器工具执行任务。请自主观察、操作、恢复和验证；完成后必须调用 browser_snapshot 获取最终页面证据。${draftRequirement}`);
+必须使用项目配置的 playwright MCP 浏览器工具执行任务。请只专注于完成本次测试，自主观察、操作、恢复和验证；不要生成 Playwright 脚本。完成后必须调用 browser_snapshot 获取最终页面证据，并以 PASS 或 FAIL 开头给出结论。`);
   const threadId = thread.id;
   if (!threadId) throw new Error('Codex 未返回 thread ID。');
-  const parsed = parseExploreResponse(turn.finalResponse);
   return {
-    thread,
     threadId,
     items: turn.items,
     trace: extractTrace(turn.items),
-    finalResponse: parsed.finalResponse,
-    draftSource: parsed.draftSource,
-    status: isPass(parsed.finalResponse) ? 'PASS' : 'FAIL',
+    finalResponse: turn.finalResponse.trim(),
+    status: isPass(turn.finalResponse) ? 'PASS' : 'FAIL',
     durationMs: Date.now() - startedAt,
+    agentConfig: config,
   };
 }
 
-/** 恢复已保存的 Codex thread，以便稍后生成或修复 Playwright 脚本。 */
-export function resumeAgentThread(threadId: string): Thread {
-  return new Codex().resumeThread(threadId, {
+/** 恢复已保存的 Codex thread；生成阶段可将写权限限制到单个目标文件。 */
+export function resumeAgentThread(
+  threadId: string,
+  config: AgentConfig,
+  writableFile?: string,
+): Thread {
+  const codex = createCodex(config, writableFile);
+  return codex.resumeThread(threadId, {
     workingDirectory: process.cwd(),
-    model: MODEL,
-    modelReasoningEffort: REASONING_EFFORT,
-    sandboxMode: 'read-only',
+    model: config.model,
+    modelReasoningEffort: config.reasoningEffort,
     approvalPolicy: 'never',
   });
 }
 
-/** 去掉模型偶尔附加的单层 Markdown 代码围栏。 */
-function normalizeSource(response: string): string {
-  const trimmed = response.trim();
-  const fenced = trimmed.match(/^```(?:typescript|ts)?\s*\n([\s\S]*?)\n```$/i);
-  return `${fenced?.[1] ?? trimmed}\n`;
-}
-
-/** 在原 Explore thread 中编译 Conservative 或 Optimized Playwright 资产。 */
-export async function generateAsset(
-  thread: Thread,
-  kind: 'conservative' | 'optimized',
-  instruction: string,
-  trace: TraceEntry[],
-): Promise<string> {
-  const shared = `
-原始 instruction：
---- INSTRUCTION START ---
-${instruction}
---- INSTRUCTION END ---
-
-成功 Explore 的已脱敏 Raw Trace：
---- TRACE START ---
-${JSON.stringify(trace, null, 2)}
---- TRACE END ---
-
-输出完整合法的标准 @playwright/test TypeScript source。使用新的 browser context，通过 test.use 加载 ${AUTH_STATE}，并使用本机 chrome channel。必须使用稳定 Playwright locator 和 web-first assertions，不得使用 MCP 临时 ref，不得使用 arbitrary sleep。只返回源码，不要 Markdown 代码块，不要解释，也不要直接写文件。`;
-  const conservative = `这是 Conservative Compilation，不追求最短路径。
-尽可能忠实保留成功 Explore 中真正影响成功的必要状态转换、Recovery、focus/blur、键盘操作、弹窗处理、页面切换、条件判断和最终验证。
-只删除纯 snapshot、纯观察 find、无副作用 evaluate、明显重复观察、MCP 临时 ref 和无意义日志。
-把临时 target/ref 转换为 getByRole、getByLabel、getByPlaceholder、getByText、getByTestId 等标准 locator，必要时才使用 CSS。
-目标是 faithful、replayable、deterministic。`;
-  const optimized = `这是 Optimized Compilation。请根据原始业务目标、成功 Explore 经验和当前 thread 上下文，生成 minimal reliable Playwright Test。
-可以删除探索噪音和无意义 Recovery、选择更直接路线与更稳定 locator，并在明显需要时参数化一次性测试数据。
-必须保留原始业务语义、instruction 明确要求的条件分支和必要状态转换；不能因为本次只走了一个分支就丢掉另一个分支。`;
-  const turn = await thread.run(`${kind === 'conservative' ? conservative : optimized}\n${shared}`);
-  return normalizeSource(turn.finalResponse);
-}
-
-/** 允许 Codex 自主决定是否实时观察页面，并仅修复一次 Optimized 资产。 */
-export async function repairOptimized(
+/** 恢复原探索会话，让 Codex 定向校准后生成唯一的 Playwright 脚本。 */
+export async function generateScript(
   threadId: string,
-  instruction: string,
-  trace: TraceEntry[],
-  source: string,
-  failureEvidence: string,
-): Promise<{ source: string; items: ThreadItem[] }> {
-  const thread = resumeAgentThread(threadId);
-  const turn = await thread.run(`Optimized Candidate 的 Fresh Playwright Validation 失败。请只修复一次，并返回完整 optimized.spec.ts 源码。
+  scriptFile: string,
+  config: AgentConfig,
+): Promise<RunResult> {
+  const thread = resumeAgentThread(threadId, config, scriptFile);
+  const relativeFile = path.relative(process.cwd(), scriptFile).replaceAll('\\', '/');
+  return thread.run(`你已经在当前 thread 中成功完成过这个测试。
 
-原始 instruction：
-${instruction}
+请以之前成功执行的路径为主要依据，不要重新发明业务路线。现在重新打开目标页面，仅使用项目配置的 Playwright MCP 做必要的定向校准：确认当前 URL、页面状态、关键控件、locator 层级，以及必要的 focus、dialog 或 navigation 状态转换。不要重复发布、删除、安装等明显有副作用的业务动作，也不要为了探索而遍历无关页面。
 
-已脱敏 Raw Exploration Trace：
-${JSON.stringify(trace, null, 2)}
+校准完成后，将这条已验证路径写成可靠、可重复执行的标准 Playwright Test，保存到 ${relativeFile}。你只能创建或修改这个目标 spec 文件，不得修改 manifest、instruction、Trace、其他 case 或任何 Runtime 文件。不要运行 Playwright 测试命令；脚本生成后立即结束，Runtime 会使用独立的 30 秒 Fresh Validation 执行一次。完成后简要说明结果。`);
+}
 
-失败 Candidate：
---- SOURCE START ---
-${source}
---- SOURCE END ---
+/** 根据模型选择 Codex Provider；DeepSeek 使用官方 Responses API 配置。 */
+function createCodex(config: AgentConfig, writableFile?: string): Codex {
+  const codexConfig = DEEPSEEK_MODELS.has(config.model)
+    ? {
+      model_provider: 'deepseek',
+      model_providers: {
+        deepseek: {
+          name: 'DeepSeek',
+          base_url: process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com',
+          env_key: 'DEEPSEEK_API_KEY',
+          wire_api: 'responses',
+        },
+      },
+    }
+    : {};
+  if (!writableFile) return new Codex({ config: codexConfig });
 
-真实 Playwright failure evidence：
---- FAILURE START ---
-${failureEvidence}
---- FAILURE END ---
-
-请自行判断现有证据是否足够；如果不够，可以使用项目配置的 Playwright MCP 重新进入真实页面调查。不要改变原始业务语义，不要使用 MCP 临时 ref 或 arbitrary sleep，并继续加载 ${AUTH_STATE}。只返回完整合法 TypeScript source，不要 Markdown 代码块，不要解释，也不要直接写文件。`);
-  return { source: normalizeSource(turn.finalResponse), items: turn.items };
+  const target = path.resolve(writableFile).replaceAll('\\', '/');
+  return new Codex({
+    config: codexConfig,
+    configOverrides: [
+      'default_permissions="script_generation"',
+      `permissions.script_generation.filesystem={":workspace_roots"="read","${target}"="write"}`,
+    ],
+  });
 }
 
 /** 递归寻找 Playwright 最近一次生成的 error-context.md。 */
@@ -321,7 +343,16 @@ export async function validateSpec(specFile: string): Promise<ValidationRecord> 
   delete childEnvironment.NO_COLOR;
   const child = spawn(
     process.execPath,
-    [playwrightCli, 'test', testFile, '--headed', '--workers=1', '--reporter=line'],
+    [
+      playwrightCli,
+      'test',
+      testFile,
+      '--headed',
+      '--workers=1',
+      '--reporter=line',
+      '--timeout=30000',
+      '--global-timeout=30000',
+    ],
     {
       cwd: process.cwd(),
       env: childEnvironment,

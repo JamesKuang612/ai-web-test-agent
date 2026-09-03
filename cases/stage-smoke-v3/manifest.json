@@ -1,0 +1,107 @@
+{
+  "version": 4,
+  "caseId": "stage-smoke-v3",
+  "originalInstruction": "打开 https://example.com，验证页面包含标题“Example Domain”。",
+  "createdAt": "2026-09-02T08:33:31.342Z",
+  "updatedAt": "2026-09-02T09:56:21.678Z",
+  "pipelineStatus": "COMPLETED",
+  "pipelineError": null,
+  "threadId": "01a06140-8470-7061-9912-1ddf1600f799",
+  "explore": {
+    "status": "PASS",
+    "durationMs": 29515,
+    "finalResponse": "PASS — 已打开 `https://example.com/`，最终页面快照显示一级标题“Example Domain”。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 2,
+    "agentConfig": {
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium"
+    }
+  },
+  "conservative": {
+    "file": "conservative.spec.ts",
+    "status": "VALIDATED",
+    "agentConfig": {
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium"
+    },
+    "validation": {
+      "status": "VALIDATED",
+      "durationMs": 3216,
+      "exitCode": 0,
+      "runAt": "2026-09-02T08:34:50.404Z",
+      "error": null
+    },
+    "repaired": false,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  },
+  "optimized": {
+    "file": "optimized.spec.ts",
+    "status": "VALIDATED",
+    "agentConfig": {
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium"
+    },
+    "validation": {
+      "status": "VALIDATED",
+      "durationMs": 3073,
+      "exitCode": 0,
+      "runAt": "2026-09-02T08:35:18.702Z",
+      "error": null
+    },
+    "repaired": false,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  },
+  "runs": [
+    {
+      "mode": "conservative",
+      "status": "PASS",
+      "durationMs": 3088,
+      "runAt": "2026-09-02T08:35:32.852Z",
+      "threadId": null,
+      "traceFile": null,
+      "error": null,
+      "agentConfig": null
+    },
+    {
+      "mode": "optimized",
+      "status": "PASS",
+      "durationMs": 3255,
+      "runAt": "2026-09-02T08:35:38.312Z",
+      "threadId": null,
+      "traceFile": null,
+      "error": null,
+      "agentConfig": null
+    },
+    {
+      "mode": "script",
+      "status": "PASS",
+      "durationMs": 2784,
+      "runAt": "2026-09-02T09:56:21.678Z",
+      "threadId": null,
+      "traceFile": null,
+      "error": null,
+      "agentConfig": null
+    }
+  ],
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "VALIDATED",
+    "agentConfig": {
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium"
+    },
+    "validation": {
+      "status": "VALIDATED",
+      "durationMs": 2816,
+      "exitCode": 0,
+      "runAt": "2026-09-02T09:55:54.934Z",
+      "error": null
+    },
+    "repaired": false,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  }
+}

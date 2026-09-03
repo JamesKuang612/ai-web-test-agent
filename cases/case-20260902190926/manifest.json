@@ -1,0 +1,48 @@
+{
+  "version": 4,
+  "caseId": "case-20260902190926",
+  "originalInstruction": "**初始URL：** https://test.jdydevelop.com/dashboard#/\n\n**账密：** 1875931049@qq.com/Jdy123456\n\n**功能场景：** 插件新建-入口\n\n**测试步骤：**\n1.进入开放平台-插件管理页面，浏览自建插件区域\n\n**预期结果（PC端）：**\ncheck：正中间显示文案“暂未自建任何插件，试试新建”，文案右上方显示“新建插件”按钮入口",
+  "createdAt": "2026-09-02T11:10:16.291Z",
+  "updatedAt": "2026-09-02T11:16:32.295Z",
+  "pipelineStatus": "COMPLETED",
+  "pipelineError": null,
+  "threadId": "01a061d0-07ba-7170-b436-97ad596a1536",
+  "explore": {
+    "status": "PASS",
+    "durationMs": 141163,
+    "finalResponse": "PASS：已进入开放平台「自建插件」页。\n\n最终页面快照确认：\n- 显示空态文案“暂未自建任何插件，试试新建”\n- 页面右上方存在“新建插件”按钮入口\n- 当前 URL：`https://test.jdydevelop.com/open#/dev/private_plugin`",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 24,
+    "agentConfig": {
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium"
+    }
+  },
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "VALIDATED",
+    "agentConfig": {
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium"
+    },
+    "validation": {
+      "status": "VALIDATED",
+      "durationMs": 6786,
+      "exitCode": 0,
+      "runAt": "2026-09-02T11:16:05.601Z",
+      "error": null
+    }
+  },
+  "runs": [
+    {
+      "mode": "script",
+      "status": "PASS",
+      "durationMs": 6542,
+      "runAt": "2026-09-02T11:16:32.295Z",
+      "threadId": null,
+      "traceFile": null,
+      "error": null,
+      "agentConfig": null
+    }
+  ]
+}

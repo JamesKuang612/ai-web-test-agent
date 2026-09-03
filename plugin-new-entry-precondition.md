@@ -1,0 +1,52 @@
+- generic [ref=f14e5]:
+  - generic [ref=f14e6]:
+    - link [ref=f14e15] [cursor=pointer]:
+      - /url: https://test.jdydevelop.com/open
+    - generic [ref=f14e18]:
+      - generic [ref=f14e21] [cursor=pointer]:
+        - generic [ref=f14e22]: 
+        - generic [ref=f14e23]: 通讯录
+      - generic [ref=f14e25]:
+        - generic [ref=f14e26] [cursor=pointer]
+        - generic [ref=f14e33] [cursor=pointer]: 蒋
+  - generic [ref=f14e36]:
+    - menu [ref=f14e37]:
+      - menuitem "开放市场" [ref=f14e38] [cursor=pointer]
+      - text: 资源管理
+      - group [ref=f14e47]:
+        - menuitem "插件管理" [ref=f14e48] [cursor=pointer]
+      - text: 密钥管理
+      - group [ref=f14e56]:
+        - menuitem "API Key" [ref=f14e57] [cursor=pointer]
+        - menuitem "API调用日志" [ref=f14e70] [cursor=pointer]
+        - menuitem "第三方授权" [ref=f14e82] [cursor=pointer]
+      - text: 开发者工具
+      - group [ref=f14e90]:
+        - menuitem "自建插件" [ref=f14e91] [cursor=pointer]
+        - menuitem "开发文档" [ref=f14e99] [cursor=pointer]
+        - menuitem "AI 连接 Beta" [ref=f14e111] [cursor=pointer]:
+          - generic [ref=f14e118]:
+            - generic [ref=f14e119]: AI 连接
+            - generic [ref=f14e120]: Beta
+    - generic [ref=f14e857]:
+      - generic [ref=f14e858]:
+        - generic [ref=f14e859]: 自建插件
+        - generic [ref=f14e860]:
+          - button [ref=f14e861] [cursor=pointer]
+          - generic [ref=f14e868]:
+            - button "新建插件" [ref=f14e869] [cursor=pointer]
+            - button "" [ref=f14e870] [cursor=pointer]
+      - generic [ref=f14e875]:
+        - generic [ref=f14e876]:
+          - generic [ref=f14e877]: 插件
+          - generic [ref=f14e878]: 状态
+          - generic [ref=f14e879]: 操作
+        - generic [ref=f14e880]:
+          - generic [ref=f14e882] [cursor=pointer]:
+            - generic [ref=f14e883]: 测试插件
+            - generic [ref=f14e895]:
+              - generic [ref=f14e896]: 
+              - generic [ref=f14e897]: 
+          - generic [ref=f14e900] [cursor=pointer]:
+            - generic [ref=f14e901]: 未命名插件
+            - generic [ref=f14e912]: 

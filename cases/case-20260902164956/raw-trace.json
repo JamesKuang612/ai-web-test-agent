@@ -1,0 +1,422 @@
+[
+  {
+    "sequence": 1,
+    "server": "playwright",
+    "tool": "browser_navigate",
+    "arguments": {
+      "url": "https://test.jdydevelop.com/dashboard#/"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 2,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 3,
+    "server": "playwright",
+    "tool": "browser_fill_form",
+    "arguments": {
+      "fields": [
+        {
+          "name": "手机号/邮箱",
+          "type": "textbox",
+          "target": "f1e30",
+          "value": "[REDACTED]"
+        },
+        {
+          "name": "密码",
+          "type": "textbox",
+          "target": "f1e33",
+          "value": "[REDACTED]"
+        }
+      ]
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 4,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "登录按钮",
+      "target": "f1e44"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 5,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 6,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 3
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 7,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 10
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 8,
+    "server": "playwright",
+    "tool": "browser_find",
+    "arguments": {
+      "text": "开放平台"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 9,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "右上角用户头像",
+      "target": "f2e56"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 10,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 6
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 11,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "() => Array.from(document.querySelectorAll('a,button,[role=button]')).map(e => ({text:(e.innerText||e.getAttribute('aria-label')||'').trim(), href:e.href||'', title:e.getAttribute('title')||''})).filter(x => x.text || x.href)"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 12,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "管理后台",
+      "target": "f2e319"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 13,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 10
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 14,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "产品中心菜单",
+      "target": "f3e41"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 15,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 16,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "顶部产品切换入口",
+      "target": "f3e21"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 17,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 8
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 18,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "关闭消息中心",
+      "target": "f3e969"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 19,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "左上角站点标识",
+      "target": "f3e9"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 20,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 2
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 21,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 5
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 22,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "右上角功能入口",
+      "target": "f9e48"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 23,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "() => Array.from(document.querySelectorAll('.comp-item')).map((e,i)=>({i,class:e.className,text:e.innerText,html:e.outerHTML.slice(0,500)}))"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 24,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "左上角产品菜单",
+      "target": ".comp-item.menu"
+    },
+    "status": "failed",
+    "error": null
+  },
+  {
+    "sequence": 25,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 4
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 26,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "关闭消息中心",
+      "target": "f9e304"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 27,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "左上角产品菜单",
+      "target": ".comp-item.menu"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 28,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 2
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 29,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "产品切换图标",
+      "target": ".fx-product-menu-icon"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 30,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 7
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 31,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "开放平台",
+      "target": "f10e327"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 32,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "depth": 9
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 33,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "插件管理菜单",
+      "target": "f11e45"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 34,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 2
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 35,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 10
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 36,
+    "server": "playwright",
+    "tool": "browser_evaluate",
+    "arguments": {
+      "function": "() => ({text:document.body.innerText, scrollHeight:document.documentElement.scrollHeight, innerHeight:window.innerHeight})"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 37,
+    "server": "playwright",
+    "tool": "browser_click",
+    "arguments": {
+      "element": "自建插件区域",
+      "target": "f11e88"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 38,
+    "server": "playwright",
+    "tool": "browser_wait_for",
+    "arguments": {
+      "time": 2
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 39,
+    "server": "playwright",
+    "tool": "browser_snapshot",
+    "arguments": {
+      "boxes": true,
+      "depth": 10
+    },
+    "status": "completed",
+    "error": null
+  }
+]

@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "caseId": "case-20260902145137",
+  "originalInstruction": "### 0个已安装插件&0个自建插件\n\n**初始URL：** https://test.jdydevelop.com/dashboard#/\n\n**账密：** [1875931049@qq.com](mailto:1875931049@qq.com)/Jdy123456\n\n**功能场景：** 插件新建-入口\n\n**测试步骤：**\n1.进入开放平台-插件管理页面，浏览空页面状态\n\n**预期结果（PC端）：**\ncheck：页面显示提示“暂未安装任何插件，去插件市场看看，或者新建插件”，其中插件市场显示跳转样式，支持跳转插件市场tab\ncheck：页面展示“新建插件”入口",
+  "createdAt": "2026-09-02T06:55:32.538Z",
+  "updatedAt": "2026-09-02T07:11:24.577Z",
+  "pipelineStatus": "FAILED",
+  "pipelineError": "Agent 探索未通过，未保存 Playwright 草稿。",
+  "threadId": "01a060e6-dce8-70b1-acf7-1ae41ccc1933",
+  "explore": {
+    "status": "FAIL",
+    "durationMs": 423988,
+    "finalResponse": "FAIL：前置条件不满足。当前企业已安装 DeepSeek（v1.26.0），另有“测试插件”“未命名插件”两个自建插件。\n\n插件管理页未显示预期空状态文案及“新建插件”入口，无法验证空态中的插件市场跳转。\n\n已返回插件管理页并调用 browser_snapshot 获取最终证据，未修改插件数据。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 30
+  },
+  "conservative": {
+    "file": "conservative.spec.ts",
+    "status": "PENDING",
+    "validation": null,
+    "repaired": false,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  },
+  "optimized": {
+    "file": "optimized.spec.ts",
+    "status": "PENDING",
+    "validation": null,
+    "repaired": false,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  },
+  "runs": [
+    {
+      "mode": "agent",
+      "status": "FAIL",
+      "durationMs": 416009,
+      "runAt": "2026-09-02T07:11:24.576Z",
+      "threadId": "01a060ee-fe47-7f53-a5eb-eb309239f2ef",
+      "traceFile": "runs/1788333084574-agent-trace.json",
+      "error": "FAIL：本次用例未通过，且前置条件不满足。\n\n- 自建插件列表已有“测试插件”“未命名插件”，并非 0 个。\n- 插件管理页实际提示“暂未安装任何插件,去插件市场看看”，缺少“或者新建插件”。\n- 插件管理页未展示“新建插件”入口。\n- “插件市场”链接样式及点击跳转正常。\n\n已使用项目 Playwright MCP 执行检查，返回插件管理页并调用 `browser_snapshot` 获取[最终页面证据](F:/workspace/EthanKuang/ai-web-test-agent/plugin-new-entry-final.md)。"
+    }
+  ]
+}

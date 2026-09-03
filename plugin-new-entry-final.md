@@ -1,0 +1,41 @@
+- generic [ref=f14e5]:
+  - generic [ref=f14e6]:
+    - link [ref=f14e15] [cursor=pointer]:
+      - /url: https://test.jdydevelop.com/open
+    - generic [ref=f14e18]:
+      - generic [ref=f14e21] [cursor=pointer]:
+        - generic [ref=f14e22]: 
+        - generic [ref=f14e23]: 通讯录
+      - generic [ref=f14e25]:
+        - generic [ref=f14e26] [cursor=pointer]
+        - generic [ref=f14e33] [cursor=pointer]: 蒋
+  - generic [ref=f14e36]:
+    - menu [ref=f14e37]:
+      - menuitem "开放市场" [ref=f14e38] [cursor=pointer]
+      - text: 资源管理
+      - group [ref=f14e47]:
+        - menuitem "插件管理" [active] [ref=f14e48] [cursor=pointer]
+      - text: 密钥管理
+      - group [ref=f14e56]:
+        - menuitem "API Key" [ref=f14e57] [cursor=pointer]
+        - menuitem "API调用日志" [ref=f14e70] [cursor=pointer]
+        - menuitem "第三方授权" [ref=f14e82] [cursor=pointer]
+      - text: 开发者工具
+      - group [ref=f14e90]:
+        - menuitem "自建插件" [ref=f14e91] [cursor=pointer]
+        - menuitem "开发文档" [ref=f14e99] [cursor=pointer]
+        - menuitem "AI 连接 Beta" [ref=f14e111] [cursor=pointer]:
+          - generic [ref=f14e118]:
+            - generic [ref=f14e119]: AI 连接
+            - generic [ref=f14e120]: Beta
+    - generic [ref=f14e857]:
+      - generic [ref=f14e859]:
+        - text: 已安装插件
+        - generic [ref=f14e930]:
+          - text: 插件IP：47.97.99.12
+          - generic [ref=f14e931] [cursor=pointer]: 
+      - generic [ref=f14e936]:
+        - text: 暂未安装任何插件,去
+        - link "插件市场" [ref=f14e937] [cursor=pointer]:
+          - /url: /open#/market
+        - text: 看看

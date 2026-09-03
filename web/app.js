@@ -4,6 +4,10 @@ const $ = (selector) => document.querySelector(selector);
 const STATUS_LABELS = {
   EXPLORING: '探索中',
   EXPLORED: '已探索',
+  GENERATING_SCRIPT: '正在生成 Playwright 脚本',
+  GENERATING_FAITHFUL: '正在生成忠实回放',
+  FAITHFUL_READY: '忠实回放已就绪',
+  GENERATING_OPTIMIZED: '正在生成收敛回放',
   CONVERGING: '收敛中',
   COMPILING: '处理中',
   COMPLETED: '已完成',
@@ -12,6 +16,7 @@ const STATUS_LABELS = {
   FAIL: '未通过',
   PENDING: '待生成',
   DRAFT: '未验证',
+  GENERATING: '生成中',
   VALIDATED: '已验证',
   INVALID: '验证失败',
   running: '执行中',
@@ -20,12 +25,71 @@ const STATUS_LABELS = {
 };
 const ACTION_LABELS = {
   explore: '智能体探索',
-  converge: '收敛 Playwright 脚本',
+  generate: '生成 Playwright 脚本',
+  faithful: '生成忠实回放',
+  optimize: '生成收敛回放',
+  converge: '旧版连续生成',
   compile: '探索并收敛',
   agent: '重新智能体探索',
-  conservative: '旧版忠实脚本重放',
-  optimized: '零模型重放',
+  script: '零模型重放',
+  conservative: '零模型重放忠实脚本',
+  optimized: '零模型重放收敛脚本',
 };
+const MODEL_LABELS = {
+  'gpt-5.6-terra': '5.6 Terra',
+  'gpt-5.6-sol': '5.6 Sol',
+  'gpt-5.6-luna': '5.6 Luna',
+  'deepseek-v4-flash': 'DeepSeek V4 Flash',
+  'deepseek-v4-pro': 'DeepSeek V4 Pro',
+  'deepseek-v4-flash-vision-exp': 'DeepSeek V4 Flash Vision',
+};
+const REASONING_LABELS = {
+  low: '低',
+  medium: '中',
+  high: '高',
+  xhigh: '极高',
+  max: '最大',
+};
+const GPT_REASONING_OPTIONS = [
+  { value: 'low', label: '低' },
+  { value: 'medium', label: '中（推荐）' },
+  { value: 'high', label: '高' },
+  { value: 'xhigh', label: '极高' },
+  { value: 'max', label: '最大' },
+];
+const DEEPSEEK_REASONING_OPTIONS = [
+  { value: 'low', label: '低' },
+  { value: 'high', label: '高（推荐）' },
+  { value: 'max', label: '最大' },
+];
+const DEEPSEEK_MODELS = new Set([
+  'deepseek-v4-flash',
+  'deepseek-v4-pro',
+  'deepseek-v4-flash-vision-exp',
+]);
+
+/** 根据模型切换可用的推理强度选项，并修正不兼容的当前值。 */
+function syncReasoningOptions(prefix, preferredValue = null) {
+  const modelSelect = $(`#${prefix}-model`);
+  const reasoningSelect = $(`#${prefix}-reasoning`);
+  const options = DEEPSEEK_MODELS.has(modelSelect.value)
+    ? DEEPSEEK_REASONING_OPTIONS
+    : GPT_REASONING_OPTIONS;
+  const currentValue = preferredValue ?? reasoningSelect.value;
+  reasoningSelect.replaceChildren(
+    ...options.map(({ value, label }) => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = label;
+      return option;
+    }),
+  );
+  reasoningSelect.value = options.some(({ value }) => value === currentValue)
+    ? currentValue
+    : DEEPSEEK_MODELS.has(modelSelect.value)
+      ? 'high'
+      : 'medium';
+}
 
 /** 生成便于本地识别且不重复的默认用例 ID。 */
 function newCaseId() {
@@ -49,9 +113,24 @@ function statusLabel(value) {
 /** 返回状态对应的颜色类名。 */
 function statusClass(value = '') {
   const normalized = String(value).toLowerCase();
-  if (['validated', 'completed', 'pass', 'explored'].includes(normalized)) return 'valid';
+  if (['validated', 'completed', 'pass', 'explored', 'faithful_ready'].includes(normalized)) return 'valid';
   if (normalized === 'draft') return 'draft';
+  if (normalized.startsWith('generating')) return 'running';
   return normalized;
+}
+
+/** 返回当前下拉框选择的模型配置。 */
+function selectedConfig(prefix) {
+  return {
+    model: $(`#${prefix}-model`).value,
+    reasoningEffort: $(`#${prefix}-reasoning`).value,
+  };
+}
+
+/** 将已保存的模型配置转换为紧凑中文。 */
+function configLabel(config) {
+  if (!config) return '旧资产，未记录';
+  return `${MODEL_LABELS[config.model] || config.model} / ${REASONING_LABELS[config.reasoningEffort] || config.reasoningEffort}`;
 }
 
 /** 设置一个状态徽标的中文文案与颜色。 */
@@ -109,9 +188,7 @@ function renderCaseList() {
     text.textContent = item.instruction.replaceAll('\n', ' ');
     const meta = document.createElement('div');
     meta.className = 'case-meta';
-    const draftLabel = item.version === 1 ? '旧版忠实脚本' : '探索草稿';
-    const replayLabel = item.version === 1 ? '旧版精简脚本' : '收敛脚本';
-    meta.textContent = `${draftLabel}：${statusLabel(item.draft)}　${replayLabel}：${statusLabel(item.replay)}　更新：${new Date(item.updatedAt).toLocaleString()}`;
+    meta.textContent = `Playwright 脚本：${statusLabel(item.script)}　更新：${new Date(item.updatedAt).toLocaleString()}`;
     card.append(heading, text, meta);
     card.addEventListener('click', () => {
       location.hash = `#/cases/${encodeURIComponent(item.caseId)}`;
@@ -180,10 +257,11 @@ function renderRuns(runs) {
 /** 根据 case 当前状态启用或禁用详情页操作。 */
 function renderActions(manifest) {
   const explored = manifest.explore?.status === 'PASS';
-  const validated = manifest.optimized.status === 'VALIDATED';
+  const script = manifest.script.status === 'VALIDATED';
   $('#agent-button').disabled = state.busy;
-  $('#converge-button').disabled = state.busy || !explored || validated;
-  $('#replay-button').disabled = state.busy || !validated;
+  $('#generate-button').disabled = state.busy || !explored;
+  $('#generate-button').textContent = script ? '重新生成 Playwright 脚本' : '生成 Playwright 脚本';
+  $('#script-replay-button').disabled = state.busy || !script;
 }
 
 /** 将一个测试用例的完整本地资产渲染到详情页。 */
@@ -197,21 +275,18 @@ function renderDetail(data) {
   $('#mcp-count').textContent = manifest.explore?.mcpCalls ?? '—';
   $('#thread-id').textContent = manifest.threadId?.slice(0, 13) || '—';
   $('#thread-id').title = manifest.threadId || '';
+  $('#explore-model').textContent = configLabel(manifest.explore?.agentConfig);
+  if (manifest.explore?.agentConfig) {
+    $('#detail-model').value = manifest.explore.agentConfig.model;
+    syncReasoningOptions('detail', manifest.explore.agentConfig.reasoningEffort);
+  } else {
+    syncReasoningOptions('detail');
+  }
   $('#final-result').textContent =
     manifest.explore?.finalResponse || manifest.pipelineError || '尚无探索结果。';
-  const legacy = manifest.version === 1;
-  $('#draft-title').textContent = legacy ? '旧版忠实脚本' : '未收敛脚本';
-  $('#draft-description').textContent = legacy
-    ? '旧版 V0 流程生成并验证的忠实重放脚本。'
-    : '由同一次智能体探索顺便生成，尚未证明可以稳定重放。';
-  $('#replay-title').textContent = legacy ? '旧版精简脚本' : '收敛脚本';
-  $('#replay-description').textContent = legacy
-    ? '旧版 V0 流程生成并验证的精简重放脚本。'
-    : '通过独立 Playwright 验证后，可在不调用模型的情况下重复执行。';
-  setStatus($('#draft-status'), manifest.conservative.status);
-  setStatus($('#replay-status'), manifest.optimized.status);
-  $('#draft-source').textContent = data.draftSource || '尚未生成。';
-  $('#replay-source').textContent = data.replaySource || '尚未生成。';
+  $('#script-config').textContent = `生成配置：${configLabel(manifest.script.agentConfig)}`;
+  setStatus($('#script-status'), manifest.script.status);
+  $('#script-source').textContent = data.scriptSource || '尚未生成。';
   renderTrace(data.trace);
   renderRuns(manifest.runs);
   renderActions(manifest);
@@ -268,7 +343,7 @@ async function submitExplore(event) {
   try {
     const job = await api('/api/explore', {
       method: 'POST',
-      body: JSON.stringify({ caseId, instruction }),
+      body: JSON.stringify({ caseId, instruction, ...selectedConfig('create') }),
     });
     $('#create-dialog').close();
     await watchJob(job);
@@ -280,13 +355,13 @@ async function submitExplore(event) {
   }
 }
 
-/** 对当前用例的探索草稿执行 Fresh Validation 和必要的一次修复。 */
-async function converge() {
+/** 恢复原探索会话并让 Codex 定向校准后生成 Playwright 脚本。 */
+async function generateScript() {
   if (!state.selected) return;
   try {
-    const job = await api('/api/converge', {
+    const job = await api('/api/generate', {
       method: 'POST',
-      body: JSON.stringify({ caseId: state.selected }),
+      body: JSON.stringify({ caseId: state.selected, ...selectedConfig('detail') }),
     });
     await watchJob(job);
   } catch (error) {
@@ -301,7 +376,7 @@ async function run(mode) {
   try {
     const job = await api('/api/run', {
       method: 'POST',
-      body: JSON.stringify({ caseId: state.selected, mode }),
+      body: JSON.stringify({ caseId: state.selected, mode, ...selectedConfig('detail') }),
     });
     await watchJob(job);
   } catch (error) {
@@ -321,10 +396,14 @@ $('#dialog-close').addEventListener('click', () => $('#create-dialog').close());
 $('#cancel-button').addEventListener('click', () => $('#create-dialog').close());
 $('#create-form').addEventListener('submit', submitExplore);
 $('#refresh-button').addEventListener('click', refreshCases);
-$('#converge-button').addEventListener('click', converge);
-$('#replay-button').addEventListener('click', () => run('optimized'));
+$('#generate-button').addEventListener('click', generateScript);
+$('#script-replay-button').addEventListener('click', () => run('script'));
 $('#agent-button').addEventListener('click', () => run('agent'));
 $('#job-close').addEventListener('click', () => $('#job-drawer').classList.add('hidden'));
+for (const prefix of ['create', 'detail']) {
+  $(`#${prefix}-model`).addEventListener('change', () => syncReasoningOptions(prefix));
+  syncReasoningOptions(prefix);
+}
 window.addEventListener('hashchange', () => route().catch((error) => alert(error.message)));
 
 $('#case-id').value = newCaseId();

@@ -1,0 +1,48 @@
+{
+  "version": 4,
+  "caseId": "case-20260903094834",
+  "originalInstruction": "2.初始URL：https://test.jdydevelop.com/dashboard#/\n账密：1875931049@qq.com/Jdy123456\n测试步骤：\n1.进入开放平台-插件管理页面，浏览自建插件区域\n预期结果（PC端）：\ncheck：正中间显示文案“暂未自建任何插件，试试新建”，右上方显示“新建插件”按钮入口",
+  "createdAt": "2026-09-03T02:12:59.666Z",
+  "updatedAt": "2026-09-03T02:23:45.419Z",
+  "pipelineStatus": "COMPLETED",
+  "pipelineError": null,
+  "threadId": "01a0650a-7849-7ec2-8edd-140d51324733",
+  "explore": {
+    "status": "PASS",
+    "durationMs": 230611,
+    "finalResponse": "**PASS**\n\n测试结论：\n- 成功登录：账密 `1875931049@qq.com / Jdy123456` 登录并进入开放平台。\n- 进入开放平台后，通过左侧「开发者工具 → 自建插件」进入插件管理相关页面（URL：`https://test.jdydevelop.com/open#/dev/private_plugin`）。\n- 自建插件区域左侧菜单「自建插件」处于激活态。\n\n预期结果验证（PC 端）：\n- 正中间显示文案「暂未自建任何插件，试试新建」 ✅\n- 右上方显示「新建插件」按钮入口 ✅\n\n页面证据已通过 `browser_snapshot` 采集（见最终快照：`自建插件` 标题、右侧「新建插件」按钮、居中空状态文案），并附截图 `plugin-management.png` 佐证。测试任务完成，结果为 **PASS**。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 38,
+    "agentConfig": {
+      "model": "deepseek-v4-flash-vision-exp",
+      "reasoningEffort": "low"
+    }
+  },
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "VALIDATED",
+    "agentConfig": {
+      "model": "deepseek-v4-flash-vision-exp",
+      "reasoningEffort": "low"
+    },
+    "validation": {
+      "status": "VALIDATED",
+      "durationMs": 9250,
+      "exitCode": 0,
+      "runAt": "2026-09-03T02:22:16.920Z",
+      "error": null
+    }
+  },
+  "runs": [
+    {
+      "mode": "script",
+      "status": "PASS",
+      "durationMs": 10684,
+      "runAt": "2026-09-03T02:23:45.418Z",
+      "threadId": null,
+      "traceFile": null,
+      "error": null,
+      "agentConfig": null
+    }
+  ]
+}

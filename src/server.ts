@@ -3,12 +3,19 @@ import { access, mkdir, readFile, readdir, unlink, writeFile } from 'node:fs/pro
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import path from 'node:path';
 
-import { getCasePaths, readManifest, type RunMode } from './core.js';
+import {
+  agentConfig,
+  getCasePaths,
+  getScriptPath,
+  readManifest,
+  type AgentConfig,
+  type RunMode,
+} from './core.js';
 
 interface Job {
   id: string;
   caseId: string;
-  action: 'explore' | 'converge' | RunMode;
+  action: 'explore' | 'generate' | RunMode;
   status: 'running' | 'completed' | 'failed';
   startedAt: string;
   finishedAt: string | null;
@@ -48,6 +55,19 @@ function caseIdFrom(value: unknown): string {
     throw new Error('Case ID 只能包含字母、数字、短横线和下划线。');
   }
   return value;
+}
+
+/** 从前端请求中读取并校验模型和推理强度。 */
+function configFrom(body: Record<string, unknown>): AgentConfig {
+  return agentConfig(
+    typeof body.model === 'string' ? body.model : null,
+    typeof body.reasoningEffort === 'string' ? body.reasoningEffort : null,
+  );
+}
+
+/** 将模型配置转换为现有 CLI 能识别的参数。 */
+function configArgs(config: AgentConfig): string[] {
+  return ['--model', config.model, '--reasoning', config.reasoningEffort];
 }
 
 /** 去除子进程输出中的 ANSI 控制字符。 */
@@ -117,8 +137,7 @@ async function listCases(): Promise<unknown[]> {
             instruction: manifest.originalInstruction,
             pipelineStatus: manifest.pipelineStatus,
             updatedAt: manifest.updatedAt,
-            draft: manifest.conservative.status,
-            replay: manifest.optimized.status,
+            script: manifest.script.status,
             lastRun: manifest.runs.at(-1) ?? null,
           };
         } catch {
@@ -131,7 +150,7 @@ async function listCases(): Promise<unknown[]> {
     .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
 }
 
-/** 读取一个 case 的 manifest、Trace、探索草稿和收敛脚本。 */
+/** 读取一个 case 的 manifest、展示用 Trace 和最终 Playwright 脚本。 */
 async function loadCase(caseId: string): Promise<unknown> {
   const paths = getCasePaths(caseId);
   const manifest = await readManifest(paths);
@@ -145,8 +164,7 @@ async function loadCase(caseId: string): Promise<unknown> {
   return {
     manifest,
     trace: JSON.parse((await optional(paths.rawTrace)) ?? '[]'),
-    draftSource: await optional(paths.conservative),
-    replaySource: await optional(paths.optimized),
+    scriptSource: await optional(getScriptPath(paths, manifest)),
   };
 }
 
@@ -157,6 +175,7 @@ async function createExploreJob(body: Record<string, unknown>): Promise<Job> {
     throw new Error('测试用例不能为空。');
   }
   const paths = getCasePaths(caseId);
+  const config = configFrom(body);
   try {
     await access(paths.directory);
     throw new Error(`Case ${caseId} 已存在，请使用新的 Case ID。`);
@@ -173,6 +192,7 @@ async function createExploreJob(body: Record<string, unknown>): Promise<Job> {
     caseId,
     '--instruction',
     instructionFile,
+    ...configArgs(config),
   ]);
   const timer = setInterval(() => {
     if (job.status === 'running') return;
@@ -182,22 +202,31 @@ async function createExploreJob(body: Record<string, unknown>): Promise<Job> {
   return job;
 }
 
-/** 为探索成功的 case 创建 Playwright 脚本收敛任务。 */
-async function createConvergeJob(body: Record<string, unknown>): Promise<Job> {
+/** 为探索成功的 case 创建自治脚本生成与验证任务。 */
+async function createGenerateJob(body: Record<string, unknown>): Promise<Job> {
   const caseId = caseIdFrom(body.caseId);
   await access(getCasePaths(caseId).manifest);
-  return startJob(caseId, 'converge', ['converge', '--case', caseId]);
+  const config = configFrom(body);
+  return startJob(caseId, 'generate', ['generate', '--case', caseId, ...configArgs(config)]);
 }
 
 /** 为已有 case 创建 Replay 或 Agent 执行任务。 */
 async function createRunJob(body: Record<string, unknown>): Promise<Job> {
   const caseId = caseIdFrom(body.caseId);
-  if (!['agent', 'conservative', 'optimized'].includes(String(body.mode))) {
+  if (!['agent', 'script'].includes(String(body.mode))) {
     throw new Error('运行模式无效。');
   }
   await access(getCasePaths(caseId).manifest);
   const mode = String(body.mode) as RunMode;
-  return startJob(caseId, mode, ['run', '--case', caseId, '--mode', mode]);
+  const config = configFrom(body);
+  return startJob(caseId, mode, [
+    'run',
+    '--case',
+    caseId,
+    '--mode',
+    mode,
+    ...configArgs(config),
+  ]);
 }
 
 /** 返回首页静态资源。 */
@@ -235,8 +264,8 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
   if (request.method === 'POST' && url.pathname === '/api/explore') {
     return json(response, 202, await createExploreJob(await readBody(request)));
   }
-  if (request.method === 'POST' && url.pathname === '/api/converge') {
-    return json(response, 202, await createConvergeJob(await readBody(request)));
+  if (request.method === 'POST' && url.pathname === '/api/generate') {
+    return json(response, 202, await createGenerateJob(await readBody(request)));
   }
   if (request.method === 'POST' && url.pathname === '/api/run') {
     return json(response, 202, await createRunJob(await readBody(request)));

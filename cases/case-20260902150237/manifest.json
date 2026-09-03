@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "caseId": "case-20260902150237",
+  "originalInstruction": "**初始URL：** https://test.jdydevelop.com/dashboard#/\n\n账密：1875931049@qq.com/Jdy123456\n\n**功能场景：** 插件新建-入口\n\n**测试步骤：**\n1.进入开放平台-插件管理页面，浏览空页面状态\n\n**预期结果（PC端）：**\ncheck：页面显示提示“暂未安装任何插件，去插件市场看看，或者新建插件”，其中插件市场显示跳转样式，支持跳转插件市场tab\ncheck：页面展示“新建插件”入口",
+  "createdAt": "2026-09-02T07:15:40.132Z",
+  "updatedAt": "2026-09-02T07:23:42.980Z",
+  "pipelineStatus": "FAILED",
+  "pipelineError": "Agent 探索未通过，未保存 Playwright 草稿。",
+  "threadId": "01a060f9-3cd0-78f2-a3b3-4daa49575f3e",
+  "explore": {
+    "status": "FAIL",
+    "durationMs": 482841,
+    "finalResponse": "FAIL：空状态实际显示“暂未安装任何插件,去插件市场看看”，缺少“或者新建插件”，且页面未展示“新建插件”入口。\n\n“插件市场”链接样式及跳转正常。已返回插件管理，并调用 browser_snapshot 获取最终页面证据。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 31
+  },
+  "conservative": {
+    "file": "conservative.spec.ts",
+    "status": "PENDING",
+    "validation": null,
+    "repaired": false,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  },
+  "optimized": {
+    "file": "optimized.spec.ts",
+    "status": "PENDING",
+    "validation": null,
+    "repaired": false,
+    "repairMcpCalls": 0,
+    "repairTraceFile": null
+  },
+  "runs": []
+}
