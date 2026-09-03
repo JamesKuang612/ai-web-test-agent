@@ -1,0 +1,38 @@
+{
+  "version": 5,
+  "caseId": "case-20260903133553",
+  "originalInstruction": "1、准备一个插件，插件中访问一个可以获取当前请求IP的API，将返回报文里的当前IP地址通过返回字段回传出来。将此插件发布到简道云插件市场，安装备用。check：运行插件，获取插件python runtime的IP，IP地址应为 ${jdy_plugin_ip}\n【用例场景】：插件运行时的出口IP\n ${jdy_plugin_ip}=47.97.99.12\n ${jodoo_plugin_ip}=13.251.218.18\n测试外链：https://test.jdydevelop.com/f/659950e5ae52aa707ac89b03",
+  "createdAt": "2026-09-03T05:36:26.961Z",
+  "updatedAt": "2026-09-03T05:36:54.107Z",
+  "pipelineStatus": "EXPLORED",
+  "pipelineError": null,
+  "threadId": null,
+  "explore": {
+    "status": "PASS",
+    "durationMs": 27140,
+    "finalResponse": "PASS\nMidscene 已完成并确认测试用例。\n插件运行成功，python runtime的IP为47.97.99.12，与预期值 ${jdy_plugin_ip}=47.97.99.12 一致，且\"是否正常\"字段显示\"正常\"，验证通过。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 0,
+    "agentConfig": null,
+    "engine": "midscene",
+    "strategy": "midscene-only",
+    "fastPath": {
+      "status": "PASS",
+      "durationMs": 27140,
+      "model": "deepseek-v4-flash-vision-exp",
+      "stepLimit": 20,
+      "reportFile": "midscene_run/report/fast-case-20260903133553-1788413788370.html",
+      "actions": 4,
+      "modelCalls": 5,
+      "modelTimeMs": 15020,
+      "error": null
+    }
+  },
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "PENDING",
+    "agentConfig": null,
+    "validation": null
+  },
+  "runs": []
+}

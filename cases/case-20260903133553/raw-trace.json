@@ -1,0 +1,40 @@
+[
+  {
+    "sequence": 1,
+    "server": "midscene",
+    "tool": "Navigate",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 2,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "python按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 3,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "python按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 4,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "python按钮"
+    },
+    "status": "completed",
+    "error": null
+  }
+]

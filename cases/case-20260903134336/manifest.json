@@ -1,0 +1,34 @@
+{
+  "version": 5,
+  "caseId": "case-20260903134336",
+  "originalInstruction": "1、准备一个插件，插件中访问一个可以获取当前请求IP的API，将返回报文里的当前IP地址通过返回字段回传出来。将此插件发布到简道云插件市场，安装备用。check：运行插件，获取插件python runtime的IP，IP地址应为 ${jdy_plugin_ip}\n【用例场景】：插件运行时的出口IP\n ${jdy_plugin_ip}=47.97.99.12\n ${jodoo_plugin_ip}=13.251.218.18\n测试外链：https://test.jdydevelop.com/f/659950e5ae52aa707ac89b03",
+  "createdAt": "2026-09-03T05:46:32.982Z",
+  "updatedAt": "2026-09-03T05:54:31.223Z",
+  "pipelineStatus": "FAILED",
+  "pipelineError": "Codex Exec exited with code 1: Reading prompt from stdin...\n2026-09-03T05:54:30.083796Z  WARN codex_skills::interface: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/\n2026-09-03T05:54:30.083844Z  WARN codex_skills::interface: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/\n2026-09-03T05:54:30.104601Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell\n2026-09-03T05:54:30.511254Z ERROR codex_core::session: Failed to create session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit code: 1: windows sandbox failed: workspace-write sandbox has no writable root capability SIDs\nError: thread/resume: thread/resume failed: error resuming thread: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit code: 1: windows sandbox failed: workspace-write sandbox has no writable root capability SIDs (code -32603)\n",
+  "threadId": "01a065ce-0474-7981-8898-ad5168f2df42",
+  "explore": {
+    "status": "PASS",
+    "durationMs": 436344,
+    "finalResponse": "PASS — Python 插件运行返回 `47.97.99.12`，与 `${jdy_plugin_ip}` 一致，状态为“正常”。提交后页面显示“提交成功”。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 76,
+    "agentConfig": {
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "max"
+    },
+    "engine": "codex",
+    "strategy": "codex-only",
+    "fastPath": null
+  },
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "INVALID",
+    "agentConfig": {
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "max"
+    },
+    "validation": null
+  },
+  "runs": []
+}

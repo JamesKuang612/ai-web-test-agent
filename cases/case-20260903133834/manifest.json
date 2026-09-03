@@ -1,0 +1,31 @@
+{
+  "version": 5,
+  "caseId": "case-20260903133834",
+  "originalInstruction": "1、准备一个插件，插件中访问一个可以获取当前请求IP的API，将返回报文里的当前IP地址通过返回字段回传出来。将此插件发布到简道云插件市场，安装备用。check：运行插件，获取插件python runtime的IP，IP地址应为 ${jdy_plugin_ip}\n【用例场景】：插件运行时的出口IP\n ${jdy_plugin_ip}=47.97.99.12\n ${jodoo_plugin_ip}=13.251.218.18\n测试外链：https://test.jdydevelop.com/f/659950e5ae52aa707ac89b03",
+  "createdAt": "2026-09-03T05:43:38.010Z",
+  "updatedAt": "2026-09-03T05:45:08.395Z",
+  "pipelineStatus": "EXPLORED",
+  "pipelineError": null,
+  "threadId": "01a065cb-5064-7ee3-8354-bdf5c9cb61ca",
+  "explore": {
+    "status": "PASS",
+    "durationMs": 90378,
+    "finalResponse": "**PASS**\n\n测试结论：插件运行时出口 IP 验证通过。\n\n**验证结果**\n- 打开测试外链 `https://test.jdydevelop.com/f/659950e5ae52aa707ac89b03`，表单标题「市场插件IP」正常加载。\n- 点击 `python` 按钮运行插件，`插件出口IP-python` 文本框返回 `您的ip地址是：47.97.99.12`，`是否正常` = `正常`。\n- 点击 `nodejs` 按钮运行插件，`插件出口IP-nodejs` 文本框返回 `您的ip地址是：47.97.99.12`，`是否正常` = `正常`。\n\n**判定依据**\n- 插件 python runtime 出口 IP 为 `47.97.99.12`，与预期 `${jdy_plugin_ip}=47.97.99.12` 完全一致。\n- 表单标注「固定47.97.99.12」与运行结果一致。\n\n**最终页面证据**（browser_snapshot）\n- `python`：`您的ip地址是：47.97.99.12` / `是否正常` = `正常`\n- `nodejs`：`您的ip地址是：47.97.99.12` / `是否正常` = `正常`\n\n说明：`${jodoo_plugin_ip}=13.251.218.18` 属国际版 Jodoo 环境；本次基于 `test.jdydevelop.com`（国内简道云）测试，运行结果为 `47.97.99.12`，符合该环境固定出口 IP。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 10,
+    "agentConfig": {
+      "model": "deepseek-v4-flash-vision-exp",
+      "reasoningEffort": "high"
+    },
+    "engine": "codex",
+    "strategy": "codex-only",
+    "fastPath": null
+  },
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "PENDING",
+    "agentConfig": null,
+    "validation": null
+  },
+  "runs": []
+}

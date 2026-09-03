@@ -175,7 +175,10 @@ button:disabled { cursor: not-allowed; opacity: 0.42; transform: none !important
 pre { margin: 11px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.7 "Cascadia Code", Consolas, monospace; }
 .instruction-panel pre { color: #39423d; }
 .result-panel pre { color: var(--accent); }
+.error-panel { padding: 20px 22px; margin-bottom: 16px; border-color: #ecc7c2; background: #fff9f8; }
+.error-panel pre { color: var(--danger); }
 .report-link { display: inline-block; margin-top: 12px; color: var(--accent); font-size: 12px; font-weight: 700; }
+.empty-copy { margin-top: 14px; color: var(--muted); font-size: 12px; }
 
 .assets { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 .assets.single { grid-template-columns: 1fr; }
@@ -197,6 +200,10 @@ summary { cursor: pointer; color: #505c55; font-size: 12px; font-weight: 700; }
 .run-row:last-child { border-bottom: 0; }
 
 dialog {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  z-index: 30;
+  transform: translate(-50%, -50%);
   width: min(680px, calc(100vw - 36px));
   padding: 0;
   border: 1px solid var(--line);
@@ -245,8 +252,11 @@ input:focus, textarea:focus, select:focus { border-color: #78a58f; box-shadow: 0
 .job-header { padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2a3831; }
 .job-header .eyebrow { color: #819087; }
 .job-header-actions { display: flex; align-items: center; gap: 8px; }
+.drawer-cancel { padding: 5px 9px; border: 1px solid #6f4b3f; border-radius: 7px; color: #ffd8cb; background: #512c22; }
 .drawer-close { width: 28px; height: 28px; border: 0; color: #9bab9f; font-size: 20px; background: transparent; }
 .job-drawer pre { max-height: 36vh; margin: 0; padding: 15px 16px; overflow: auto; white-space: pre-wrap; font-size: 11px; }
+.error-toast { position: fixed; z-index: 40; top: 86px; right: 22px; max-width: min(520px, calc(100vw - 44px)); padding: 12px 14px; display: flex; gap: 14px; border: 1px solid #e4b4ad; border-radius: 10px; color: var(--danger); background: #fff7f5; box-shadow: var(--shadow); font-size: 12px; }
+.error-toast button { border: 0; color: inherit; background: transparent; }
 
 @media (max-width: 900px) {
   .page { width: min(100% - 32px, 1240px); padding-top: 30px; }

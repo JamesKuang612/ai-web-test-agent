@@ -3,9 +3,9 @@
   "caseId": "case-20260903114353",
   "originalInstruction": "4.配置项校验-插件属性\n初始URL：*https://test.jdydevelop.com/dashboard#/\n账密：1875931049@qq.com/Jdy123456\n功能场景：插件配置\n测试步骤：\n1.进入插件属性页面，浏览属性项\n2.配置属性-概述，填写内容超过40个字符，校验聚焦及失焦状态显示\n3.配置属性-插件详情，填写内容超过500个字符，校验聚焦及失焦状态显示\n4.配置属性-帮助文档，填写内容超过100个字符，校验聚焦及失焦状态显示\n测试数据：\n插件属性入口：\n1、新建插件后，跳转页面-插件属性tab\n2、已生成插件，插件管理页面-插件A-编辑插件\n预期结果（PC端）：\ncheck：展示插件图标、插件概述、插件详情、帮助文档\ncheck：聚焦时红字显示“最多输入40个字”，失焦后超过40个字部分截断\ncheck：聚焦时红字显示“最多输入500个字”，失焦后超过500个字部分截断\ncheck：聚焦时红字显示“最多输入100个字”，失焦后超过100个字部分截断",
   "createdAt": "2026-09-03T03:44:17.179Z",
-  "updatedAt": "2026-09-03T03:55:21.081Z",
-  "pipelineStatus": "EXPLORING",
-  "pipelineError": null,
+  "updatedAt": "2026-09-03T04:45:16.945Z",
+  "pipelineStatus": "FAILED",
+  "pipelineError": "上一次任务在服务停止或人工终止后未正常完成。",
   "threadId": null,
   "explore": null,
   "script": {

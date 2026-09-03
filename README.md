@@ -1,6 +1,6 @@
-# AI Web Test Agent V0
+# AI Web Test Agent
 
-这个项目不重新实现 Web 智能体。Codex 负责理解页面、决定操作以及生成测试脚本，Playwright MCP 提供浏览器工具，V0 运行时只负责任务入口、本地资产、展示用轨迹和最终独立验证。
+这个项目不重新实现 Web 智能体。Codex 负责理解页面、决定操作以及生成测试脚本，Playwright MCP 提供浏览器工具；Midscene 提供独立的快速视觉探索。运行时只负责任务入口、本地资产、展示用轨迹和最终独立验证。
 
 当前提供两种彼此独立的探索方式。快速探索用于测试简单 UI 用例的速度，正常探索保留原 Codex 主链：
 
@@ -18,7 +18,7 @@
 - 本机 Codex 已通过 ChatGPT 登录
 - 已执行 `npm install`
 - Playwright 登录状态保存在 `playwright/.auth/jdy.json`
-- 使用 Midscene 快速探索时，设置 `DEEPSEEK_API_KEY` 或 `MIDSCENE_MODEL_API_KEY`
+- 使用 Midscene 快速探索时，在 Git ignored 的本地 `.env` 中设置 `DEEPSEEK_API_KEY` 或 `MIDSCENE_MODEL_API_KEY`
 
 `playwright/.auth/` 是本地敏感目录，已经被 Git 忽略，不得提交其中的 storageState。
 
@@ -71,7 +71,28 @@ npm start -- run --case <case-id> --mode agent
 
 默认配置为 `gpt-5.6-terra + medium`。GPT 支持五档推理强度，DeepSeek 支持 `low/high/max` 三档；前端会根据模型动态展示选项。每次实际使用的配置都会保存到 `manifest.json`；无效值会直接报错，不会静默切换模型。
 
-DeepSeek 模型通过 Codex custom model provider 使用 Responses API。运行 DeepSeek 模型前，请在当前进程环境中设置 `DEEPSEEK_API_KEY`；密钥不会写入项目文件。可选模型包括 `deepseek-v4-flash`、`deepseek-v4-pro` 和 `deepseek-v4-flash-vision-exp`。
+DeepSeek 模型通过 Codex custom model provider 使用 Responses API。可选模型包括 `deepseek-v4-flash`、`deepseek-v4-pro` 和 `deepseek-v4-flash-vision-exp`。本地 `.env` 已被 Git 忽略，不得提交其中的 Key。
+
+## 项目结构
+
+```text
+src/
+├── domain/       # 用例、资产和运行状态类型
+├── config/       # 模型配置校验
+├── cases/        # 本地 JSON/文本资产仓储
+├── agents/       # Codex 与 Midscene 执行器
+├── playwright/   # Fresh Validation
+├── application/  # 探索、生成和重放用例编排
+├── jobs/         # 可恢复的本地后台任务
+├── api/          # Fastify HTTP API
+├── cli/          # 命令行入口
+└── shared/       # Trace 与脱敏
+
+web/src/          # React + Vite 本地控制台
+tests/            # Vitest 单元测试
+```
+
+后端采用 Fastify + Zod，前端采用 React + Vite + TypeScript，测试使用 Vitest，代码检查使用 Biome。项目仍然以 `cases/` 为唯一业务数据源，没有数据库、队列或重量级业务框架。
 
 ## 本地资产
 
@@ -105,3 +126,15 @@ npm run web
 - 查看当前任务输出与历史运行结果。
 
 页面只监听本机地址。它没有数据库，以 `cases/` 中的 JSON、文本和 `.spec.ts` 文件作为唯一数据源。
+
+## 开发验证
+
+```powershell
+npm run typecheck
+npm test
+npm run lint
+npm run build
+git diff --check
+```
+
+`npm run build` 会分别构建 Node.js 后端和 React 前端；前端构建结果位于 Git ignored 的 `web-dist/`。后台任务快照保存在 Git ignored 的 `.runtime/jobs/`，服务异常重启后会把未完成任务和用例状态收敛为失败，避免页面永久停在“执行中”。
