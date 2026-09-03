@@ -1,0 +1,5 @@
+准备一个插件，插件中访问一个可以获取当前请求IP的API，将返回报文里的当前IP地址通过返回字段回传出来。将此插件发布到简道云插件市场，安装备用。check：运行插件，获取插件python runtime的IP，IP地址应为 ${jdy_plugin_ip}
+【用例场景】：插件运行时的出口IP
+ ${jdy_plugin_ip}=47.97.99.12
+ ${jodoo_plugin_ip}=13.251.218.18
+测试外链：https://test.jdydevelop.com/f/659950e5ae52aa707ac89b03

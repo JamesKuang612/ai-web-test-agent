@@ -127,6 +127,20 @@ function selectedConfig(prefix) {
   };
 }
 
+/** 根据探索方式显示相关配置，并明确两条链路互不兜底。 */
+function syncExploreStrategy() {
+  const quick = $('#create-strategy').value === 'midscene-only';
+  const stepInput = $('#midscene-step-limit');
+  const configGrid = $('#codex-config-grid');
+  stepInput.disabled = !quick;
+  configGrid.classList.toggle('disabled-controls', quick);
+  for (const select of configGrid.querySelectorAll('select')) select.disabled = quick;
+  $('#create-hint').textContent = quick
+    ? `快速探索只运行 Midscene + DeepSeek V4 Flash Vision，最多 ${stepInput.value || 20} Step；失败后直接结束，不会调用 Codex。`
+    : '正常探索保持原有 Codex + Playwright MCP 链路，并保存可用于生成 Playwright 脚本的 Codex 会话。';
+  $('#explore-button').textContent = quick ? '开始快速探索' : '开始正常探索';
+}
+
 /** 将已保存的模型配置转换为紧凑中文。 */
 function configLabel(config) {
   if (!config) return '旧资产，未记录';
@@ -188,7 +202,11 @@ function renderCaseList() {
     text.textContent = item.instruction.replaceAll('\n', ' ');
     const meta = document.createElement('div');
     meta.className = 'case-meta';
-    meta.textContent = `Playwright 脚本：${statusLabel(item.script)}　更新：${new Date(item.updatedAt).toLocaleString()}`;
+    const engine = item.exploreEngine === 'midscene' ? 'Midscene' : 'Codex';
+    const duration = Number.isFinite(item.exploreDurationMs)
+      ? `　探索：${engine} / ${formatDuration(item.exploreDurationMs)}`
+      : '';
+    meta.textContent = `Playwright 脚本：${statusLabel(item.script)}${duration}　更新：${new Date(item.updatedAt).toLocaleString()}`;
     card.append(heading, text, meta);
     card.addEventListener('click', () => {
       location.hash = `#/cases/${encodeURIComponent(item.caseId)}`;
@@ -257,9 +275,14 @@ function renderRuns(runs) {
 /** 根据 case 当前状态启用或禁用详情页操作。 */
 function renderActions(manifest) {
   const explored = manifest.explore?.status === 'PASS';
+  const resumable = explored && Boolean(manifest.threadId);
   const script = manifest.script.status === 'VALIDATED';
   $('#agent-button').disabled = state.busy;
-  $('#generate-button').disabled = state.busy || !explored;
+  $('#generate-button').disabled = state.busy || !resumable;
+  $('#generate-button').title =
+    explored && !manifest.threadId
+      ? 'Midscene 快速探索没有 Codex 会话；当前速度实验暂不生成纯 Playwright 脚本。'
+      : '';
   $('#generate-button').textContent = script ? '重新生成 Playwright 脚本' : '生成 Playwright 脚本';
   $('#script-replay-button').disabled = state.busy || !script;
 }
@@ -272,10 +295,22 @@ function renderDetail(data) {
   $('#detail-instruction').textContent = manifest.originalInstruction;
   setStatus($('#pipeline-status'), manifest.pipelineStatus);
   setStatus($('#explore-status'), manifest.explore?.status);
+  $('#explore-duration').textContent = formatDuration(manifest.explore?.durationMs);
   $('#mcp-count').textContent = manifest.explore?.mcpCalls ?? '—';
   $('#thread-id').textContent = manifest.threadId?.slice(0, 13) || '—';
   $('#thread-id').title = manifest.threadId || '';
-  $('#explore-model').textContent = configLabel(manifest.explore?.agentConfig);
+  $('#explore-model').textContent =
+    manifest.explore?.engine === 'midscene'
+      ? 'DeepSeek V4 Flash Vision'
+      : configLabel(manifest.explore?.agentConfig);
+  const fastPath = manifest.explore?.fastPath;
+  const stepLimit = fastPath?.stepLimit ?? 20;
+  $('#fast-path-status').textContent = fastPath
+    ? `快速探索 · ${statusLabel(fastPath.status)} · ${fastPath.actions} 动作 · 上限 ${stepLimit} Step`
+    : '正常探索 · Codex';
+  $('#fast-path-status').title = fastPath
+    ? `Midscene：${formatDuration(fastPath.durationMs)}；模型调用 ${fastPath.modelCalls} 次，用时 ${formatDuration(fastPath.modelTimeMs)}`
+    : 'Codex + Playwright MCP';
   if (manifest.explore?.agentConfig) {
     $('#detail-model').value = manifest.explore.agentConfig.model;
     syncReasoningOptions('detail', manifest.explore.agentConfig.reasoningEffort);
@@ -284,6 +319,9 @@ function renderDetail(data) {
   }
   $('#final-result').textContent =
     manifest.explore?.finalResponse || manifest.pipelineError || '尚无探索结果。';
+  const reportLink = $('#midscene-report');
+  reportLink.classList.toggle('hidden', !data.midsceneReportUrl);
+  if (data.midsceneReportUrl) reportLink.href = data.midsceneReportUrl;
   $('#script-config').textContent = `生成配置：${configLabel(manifest.script.agentConfig)}`;
   setStatus($('#script-status'), manifest.script.status);
   $('#script-source').textContent = data.scriptSource || '尚未生成。';
@@ -343,7 +381,13 @@ async function submitExplore(event) {
   try {
     const job = await api('/api/explore', {
       method: 'POST',
-      body: JSON.stringify({ caseId, instruction, ...selectedConfig('create') }),
+      body: JSON.stringify({
+        caseId,
+        instruction,
+        strategy: $('#create-strategy').value,
+        stepLimit: Number($('#midscene-step-limit').value),
+        ...selectedConfig('create'),
+      }),
     });
     $('#create-dialog').close();
     await watchJob(job);
@@ -395,6 +439,8 @@ $('#create-button').addEventListener('click', () => $('#create-dialog').showModa
 $('#dialog-close').addEventListener('click', () => $('#create-dialog').close());
 $('#cancel-button').addEventListener('click', () => $('#create-dialog').close());
 $('#create-form').addEventListener('submit', submitExplore);
+$('#create-strategy').addEventListener('change', syncExploreStrategy);
+$('#midscene-step-limit').addEventListener('input', syncExploreStrategy);
 $('#refresh-button').addEventListener('click', refreshCases);
 $('#generate-button').addEventListener('click', generateScript);
 $('#script-replay-button').addEventListener('click', () => run('script'));
@@ -407,4 +453,5 @@ for (const prefix of ['create', 'detail']) {
 window.addEventListener('hashchange', () => route().catch((error) => alert(error.message)));
 
 $('#case-id').value = newCaseId();
+syncExploreStrategy();
 route().catch((error) => alert(error.message));

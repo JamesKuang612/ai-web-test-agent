@@ -2,17 +2,14 @@
 
 这个项目不重新实现 Web 智能体。Codex 负责理解页面、决定操作以及生成测试脚本，Playwright MCP 提供浏览器工具，V0 运行时只负责任务入口、本地资产、展示用轨迹和最终独立验证。
 
-核心流程只有两个由用户独立触发的阶段：
+当前提供两种彼此独立的探索方式。快速探索用于测试简单 UI 用例的速度，正常探索保留原 Codex 主链：
 
 ```text
-自然语言测试用例
-→ Codex + Playwright MCP 自主探索
-→ 保存原 Codex thread ID、结论和展示用 Trace
-→ 用户点击生成
-→ 恢复原 Codex thread
-→ Codex 定向校准后只写入目标 Playwright Test
-→ 独立 Fresh Validation
-→ 零模型重复执行
+快速探索：自然语言测试用例 → Midscene + DeepSeek Vision（用户设置 Step 上限）→ 结论和报告
+
+正常探索：自然语言测试用例 → Codex + Playwright MCP → 保存 thread ID、结论和 Trace
+          → 用户点击生成 → 恢复原 Codex thread → 生成并验证 Playwright Test
+          → 零模型重复执行
 ```
 
 ## 前提
@@ -21,6 +18,7 @@
 - 本机 Codex 已通过 ChatGPT 登录
 - 已执行 `npm install`
 - Playwright 登录状态保存在 `playwright/.auth/jdy.json`
+- 使用 Midscene 快速探索时，设置 `DEEPSEEK_API_KEY` 或 `MIDSCENE_MODEL_API_KEY`
 
 `playwright/.auth/` 是本地敏感目录，已经被 Git 忽略，不得提交其中的 storageState。
 
@@ -30,7 +28,15 @@
 npm start -- explore --case <case-id> --instruction <instruction-file>
 ```
 
-一次智能体探索会创建新的 Codex 会话，通过 Playwright MCP 完成真实页面测试，保存 PASS/FAIL 结论和脱敏后的 MCP 工具轨迹，然后立即结束。探索阶段不会生成 Playwright 脚本。
+一次智能体探索默认保持原有 Codex 正常探索。使用 Midscene 快速探索：
+
+```powershell
+npm start -- explore --case <case-id> --instruction <instruction-file> --strategy midscene-only --steps 30
+```
+
+Midscene 固定使用 `deepseek-v4-flash-vision-exp`，在独立可见浏览器中执行。规划周期默认上限为 20，可通过前端或 CLI 的 `--steps <1-100>` 调整。成功时保存结果和本地可视化报告；失败时直接结束，不会自动调用 Codex。Midscene 报告保存在 Git ignored 的 `midscene_run/`。
+
+快速探索当前只用于独立速度实验，不创建 Codex thread，因此该 case 暂不能生成 Playwright 脚本。需要继续生成和零模型重放的用例应选择“正常探索”。两种探索方式不会自动互相兜底。
 
 ## 生成 Playwright 脚本
 
@@ -88,7 +94,9 @@ npm run web
 
 然后打开 `http://127.0.0.1:4173`。页面提供：
 
-- 创建自然语言测试用例并选择模型；
+- 创建自然语言测试用例，明确选择“快速探索”或“正常探索”；
+- 快速探索只运行 Midscene，并允许设置 1–100 的 Step 上限；正常探索只运行 Codex，并可配置模型；
+- 查看 Midscene 耗时、动作数量和可视化报告；
 - 查看探索结论、Codex 会话和 MCP 工具轨迹；
 - 恢复原 Codex 会话生成唯一的 Playwright 脚本；
 - 查看脚本及其 Fresh Validation 状态；

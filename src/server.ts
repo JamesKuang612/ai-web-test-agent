@@ -9,6 +9,7 @@ import {
   getScriptPath,
   readManifest,
   type AgentConfig,
+  type ExploreStrategy,
   type RunMode,
 } from './core.js';
 
@@ -68,6 +69,24 @@ function configFrom(body: Record<string, unknown>): AgentConfig {
 /** 将模型配置转换为现有 CLI 能识别的参数。 */
 function configArgs(config: AgentConfig): string[] {
   return ['--model', config.model, '--reasoning', config.reasoningEffort];
+}
+
+/** 校验前端选择的探索策略。 */
+function strategyFrom(body: Record<string, unknown>): ExploreStrategy {
+  const strategy = typeof body.strategy === 'string' ? body.strategy : 'codex-only';
+  if (!['codex-only', 'midscene-only'].includes(strategy)) {
+    throw new Error('探索策略无效。');
+  }
+  return strategy as ExploreStrategy;
+}
+
+/** 校验前端提交的 Midscene 规划次数上限。 */
+function stepLimitFrom(body: Record<string, unknown>): number {
+  const value = body.stepLimit ?? 20;
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 100) {
+    throw new Error('快速探索 Step 上限必须是 1 到 100 之间的整数。');
+  }
+  return value;
 }
 
 /** 去除子进程输出中的 ANSI 控制字符。 */
@@ -138,6 +157,9 @@ async function listCases(): Promise<unknown[]> {
             pipelineStatus: manifest.pipelineStatus,
             updatedAt: manifest.updatedAt,
             script: manifest.script.status,
+            exploreEngine: manifest.explore?.engine ?? 'codex',
+            exploreDurationMs: manifest.explore?.durationMs ?? null,
+            fastPathStatus: manifest.explore?.fastPath?.status ?? null,
             lastRun: manifest.runs.at(-1) ?? null,
           };
         } catch {
@@ -165,7 +187,27 @@ async function loadCase(caseId: string): Promise<unknown> {
     manifest,
     trace: JSON.parse((await optional(paths.rawTrace)) ?? '[]'),
     scriptSource: await optional(getScriptPath(paths, manifest)),
+    midsceneReportUrl: manifest.explore?.fastPath?.reportFile
+      ? `/api/cases/${encodeURIComponent(caseId)}/midscene-report`
+      : null,
   };
+}
+
+/** 返回 manifest 指向的本地 Midscene 单文件报告。 */
+async function serveMidsceneReport(caseId: string, response: ServerResponse): Promise<void> {
+  const manifest = await readManifest(getCasePaths(caseId));
+  const reportFile = manifest.explore?.fastPath?.reportFile;
+  if (!reportFile) return json(response, 404, { error: '该用例没有 Midscene 报告。' });
+  const reportRoot = path.resolve(process.env.MIDSCENE_RUN_DIR ?? 'midscene_run', 'report');
+  const reportPath = path.resolve(reportFile);
+  if (!reportPath.startsWith(`${reportRoot}${path.sep}`)) {
+    throw new Error('Midscene 报告路径无效。');
+  }
+  response.writeHead(200, {
+    'content-type': 'text/html; charset=utf-8',
+    'cache-control': 'no-store',
+  });
+  response.end(await readFile(reportPath));
 }
 
 /** 接收自然语言文本并创建独立的 Agent 探索任务。 */
@@ -176,6 +218,8 @@ async function createExploreJob(body: Record<string, unknown>): Promise<Job> {
   }
   const paths = getCasePaths(caseId);
   const config = configFrom(body);
+  const strategy = strategyFrom(body);
+  const stepLimit = stepLimitFrom(body);
   try {
     await access(paths.directory);
     throw new Error(`Case ${caseId} 已存在，请使用新的 Case ID。`);
@@ -192,6 +236,10 @@ async function createExploreJob(body: Record<string, unknown>): Promise<Job> {
     caseId,
     '--instruction',
     instructionFile,
+    '--strategy',
+    strategy,
+    '--steps',
+    String(stepLimit),
     ...configArgs(config),
   ]);
   const timer = setInterval(() => {
@@ -252,6 +300,10 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
   }
   if (request.method === 'GET' && url.pathname === '/api/cases') {
     return json(response, 200, await listCases());
+  }
+  const reportMatch = url.pathname.match(/^\/api\/cases\/([^/]+)\/midscene-report$/);
+  if (request.method === 'GET' && reportMatch?.[1]) {
+    return serveMidsceneReport(caseIdFrom(decodeURIComponent(reportMatch[1])), response);
   }
   if (request.method === 'GET' && url.pathname.startsWith('/api/cases/')) {
     const caseId = caseIdFrom(decodeURIComponent(url.pathname.slice('/api/cases/'.length)));

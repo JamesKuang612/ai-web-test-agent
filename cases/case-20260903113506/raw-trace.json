@@ -1,0 +1,204 @@
+[
+  {
+    "sequence": 1,
+    "server": "midscene",
+    "tool": "Navigate",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 2,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "手机号/邮箱输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 3,
+    "server": "midscene",
+    "tool": "Input",
+    "arguments": {
+      "target": "手机号/邮箱输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 4,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "密码输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 5,
+    "server": "midscene",
+    "tool": "Input",
+    "arguments": {
+      "target": "密码输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 6,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "登录按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 7,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "登录按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 8,
+    "server": "midscene",
+    "tool": "Sleep",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 9,
+    "server": "midscene",
+    "tool": "Sleep",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 10,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "我的应用区域的搜索框（请输入名称来搜索）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 11,
+    "server": "midscene",
+    "tool": "Input",
+    "arguments": {
+      "target": "我的应用区域的搜索框（请输入名称来搜索）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 12,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "我的应用标题旁边的图标（新建应用入口）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 13,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "右上角的关闭按钮（X）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 14,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "确认对话框中的\"确定\"按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 15,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "\"+ 新建应用\"按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 16,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "创建空白应用"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 17,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "创建空白应用对话框中的\"名称\"输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 18,
+    "server": "midscene",
+    "tool": "Input",
+    "arguments": {
+      "target": "创建空白应用对话框中的\"名称\"输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 19,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "创建空白应用对话框中的\"确定\"按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 20,
+    "server": "midscene",
+    "tool": "Sleep",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 21,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "左上角的返回箭头（<）"
+    },
+    "status": "completed",
+    "error": null
+  }
+]

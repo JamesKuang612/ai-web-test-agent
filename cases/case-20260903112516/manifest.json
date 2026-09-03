@@ -1,0 +1,37 @@
+{
+  "version": 5,
+  "caseId": "case-20260903112516",
+  "originalInstruction": "准备一个插件，插件中访问一个可以获取当前请求IP的API，将返回报文里的当前IP地址通过返回字段回传出来。将此插件发布到简道云插件市场，安装备用。check：运行插件，获取插件python runtime的IP，IP地址应为 ${jdy_plugin_ip}\n【用例场景】：插件运行时的出口IP\n ${jdy_plugin_ip}=47.97.99.12\n ${jodoo_plugin_ip}=13.251.218.18\n测试外链：https://test.jdydevelop.com/f/659950e5ae52aa707ac89b03",
+  "createdAt": "2026-09-03T03:25:36.680Z",
+  "updatedAt": "2026-09-03T03:25:36.683Z",
+  "pipelineStatus": "FAILED",
+  "pipelineError": "Midscene 快速探索未通过，不会自动转入 Codex。",
+  "threadId": null,
+  "explore": {
+    "status": "FAIL",
+    "durationMs": 0,
+    "finalResponse": "FAIL\nMidscene 快速探索未完成：缺少 DEEPSEEK_API_KEY 或 MIDSCENE_MODEL_API_KEY。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 0,
+    "agentConfig": null,
+    "engine": "midscene",
+    "strategy": "midscene-only",
+    "fastPath": {
+      "status": "FAIL",
+      "durationMs": 0,
+      "model": "deepseek-v4-flash-vision-exp",
+      "reportFile": null,
+      "actions": 0,
+      "modelCalls": 0,
+      "modelTimeMs": 0,
+      "error": "缺少 DEEPSEEK_API_KEY 或 MIDSCENE_MODEL_API_KEY。"
+    }
+  },
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "PENDING",
+    "agentConfig": null,
+    "validation": null
+  },
+  "runs": []
+}

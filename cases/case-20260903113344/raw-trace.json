@@ -1,0 +1,124 @@
+[
+  {
+    "sequence": 1,
+    "server": "midscene",
+    "tool": "Navigate",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 2,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "手机号/邮箱输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 3,
+    "server": "midscene",
+    "tool": "Input",
+    "arguments": {
+      "target": "手机号/邮箱输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 4,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "密码输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 5,
+    "server": "midscene",
+    "tool": "Input",
+    "arguments": {
+      "target": "密码输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 6,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "登录按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 7,
+    "server": "midscene",
+    "tool": "Sleep",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 8,
+    "server": "midscene",
+    "tool": "Sleep",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 9,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "左上角菜单图标"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 10,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "开放平台菜单项"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 11,
+    "server": "midscene",
+    "tool": "Sleep",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 12,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "插件管理菜单项"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 13,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "自建插件菜单项"
+    },
+    "status": "completed",
+    "error": null
+  }
+]

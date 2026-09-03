@@ -39,6 +39,8 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
 
 export type AssetStatus = 'PENDING' | 'DRAFT' | 'GENERATING' | 'VALIDATED' | 'INVALID';
 export type RunMode = 'agent' | 'script' | 'conservative' | 'optimized';
+export type ExploreStrategy = 'codex-only' | 'midscene-only';
+export type ExploreEngine = 'codex' | 'midscene';
 export type PipelineStatus =
   | 'EXPLORING'
   | 'EXPLORED'
@@ -78,7 +80,7 @@ export interface RunRecord {
 }
 
 export interface CaseManifest {
-  version: 1 | 2 | 3 | 4;
+  version: 1 | 2 | 3 | 4 | 5;
   caseId: string;
   originalInstruction: string;
   createdAt: string;
@@ -93,6 +95,19 @@ export interface CaseManifest {
     traceFile: string;
     mcpCalls: number;
     agentConfig?: AgentConfig | null;
+    engine?: ExploreEngine;
+    strategy?: ExploreStrategy;
+    fastPath?: {
+      status: 'PASS' | 'FAIL';
+      durationMs: number;
+      model: string;
+      stepLimit?: number;
+      reportFile: string | null;
+      actions: number;
+      modelCalls: number;
+      modelTimeMs: number;
+      error: string | null;
+    } | null;
   } | null;
   script: AssetRecord;
   conservative?: AssetRecord;
@@ -167,7 +182,7 @@ export function getCasePaths(caseId: string): CasePaths {
 export function createManifest(caseId: string, instruction: string): CaseManifest {
   const now = new Date().toISOString();
   return {
-    version: 4,
+    version: 5,
     caseId,
     originalInstruction: instruction,
     createdAt: now,

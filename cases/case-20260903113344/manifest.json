@@ -1,0 +1,37 @@
+{
+  "version": 5,
+  "caseId": "case-20260903113344",
+  "originalInstruction": "2.初始URL：https://test.jdydevelop.com/dashboard#/\n账密：1875931049@qq.com/Jdy123456\n测试步骤：\n1.进入开放平台-插件管理页面，浏览自建插件区域\n预期结果（PC端）：\ncheck：正中间显示文案“暂未自建任何插件，试试新建”，右上方显示“新建插件”按钮入口",
+  "createdAt": "2026-09-03T03:34:12.879Z",
+  "updatedAt": "2026-09-03T03:35:06.268Z",
+  "pipelineStatus": "EXPLORED",
+  "pipelineError": null,
+  "threadId": null,
+  "explore": {
+    "status": "PASS",
+    "durationMs": 53385,
+    "finalResponse": "PASS\nMidscene 已完成并确认测试用例。\n测试用例执行完成，验证结果如下：\n1. 已成功登录系统（[REDACTED]/Jdy123456）\n2. 已进入开放平台-插件管理页面，并浏览自建插件区域\n3. 预期结果验证：\n   - 正中间显示文案\"暂未自建任何插件，试试新建\" ✓\n   - 右上方显示\"新建插件\"按钮入口 ✓\n\n所有预期结果均已满足，测试通过。",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 0,
+    "agentConfig": null,
+    "engine": "midscene",
+    "strategy": "midscene-only",
+    "fastPath": {
+      "status": "PASS",
+      "durationMs": 53385,
+      "model": "deepseek-v4-flash-vision-exp",
+      "reportFile": "midscene_run/report/fast-case-20260903113344-1788406453757.html",
+      "actions": 13,
+      "modelCalls": 14,
+      "modelTimeMs": 26596,
+      "error": null
+    }
+  },
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "PENDING",
+    "agentConfig": null,
+    "validation": null
+  },
+  "runs": []
+}

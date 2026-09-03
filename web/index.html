@@ -73,7 +73,7 @@
               </label>
             </div>
             <div class="detail-actions">
-              <button id="agent-button" class="secondary" type="button">重新智能体探索</button>
+              <button id="agent-button" class="secondary" type="button">重新 Codex 探索</button>
               <button id="generate-button" class="primary" type="button">生成 Playwright 脚本</button>
             </div>
           </div>
@@ -89,7 +89,11 @@
             <strong id="explore-status"></strong>
           </article>
           <article class="metric">
-            <span>MCP 调用</span>
+            <span>总探索耗时</span>
+            <strong id="explore-duration"></strong>
+          </article>
+          <article class="metric">
+            <span>Codex MCP 调用</span>
             <strong id="mcp-count"></strong>
           </article>
           <article class="metric">
@@ -99,6 +103,10 @@
           <article class="metric">
             <span>探索模型</span>
             <strong id="explore-model"></strong>
+          </article>
+          <article class="metric">
+            <span>探索方式</span>
+            <strong id="fast-path-status"></strong>
           </article>
         </section>
 
@@ -110,6 +118,7 @@
         <section class="panel result-panel">
           <p class="eyebrow">最近一次探索结果</p>
           <pre id="final-result"></pre>
+          <a id="midscene-report" class="report-link hidden" target="_blank" rel="noreferrer">查看 Midscene 可视化报告</a>
         </section>
 
         <section class="assets single">
@@ -162,9 +171,20 @@
           rows="12"
           placeholder="粘贴完整测试用例，包括初始 URL、操作步骤和预期结果。"
         ></textarea>
-        <div class="dialog-model-grid">
+        <label>
+          探索方式
+          <select id="create-strategy">
+            <option value="midscene-only" selected>快速探索（Midscene）</option>
+            <option value="codex-only">正常探索（Codex）</option>
+          </select>
+        </label>
+        <label>
+          快速探索 Step 上限
+          <input id="midscene-step-limit" type="number" min="1" max="100" step="1" value="20" required />
+        </label>
+        <div id="codex-config-grid" class="dialog-model-grid">
           <label>
-            探索模型
+            Codex 探索模型
             <select id="create-model">
               <option value="gpt-5.6-terra" selected>5.6 Terra（推荐）</option>
               <option value="gpt-5.6-sol">5.6 Sol</option>
@@ -185,10 +205,10 @@
             </select>
           </label>
         </div>
-        <p class="hint">本阶段只执行智能体探索并保存结论和 MCP 轨迹，不生成 Playwright 脚本。</p>
+        <p id="create-hint" class="hint"></p>
         <div class="dialog-actions">
           <button id="cancel-button" class="secondary" type="button">取消</button>
-          <button id="explore-button" class="primary" type="submit">开始智能体探索</button>
+          <button id="explore-button" class="primary" type="submit">开始快速探索</button>
         </div>
       </form>
     </dialog>

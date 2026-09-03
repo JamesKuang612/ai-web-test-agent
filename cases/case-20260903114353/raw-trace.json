@@ -1,0 +1,286 @@
+[
+  {
+    "sequence": 1,
+    "server": "midscene",
+    "tool": "Navigate",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 2,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "手机号/邮箱输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 3,
+    "server": "midscene",
+    "tool": "Input",
+    "arguments": {
+      "target": "手机号/邮箱输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 4,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "密码输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 5,
+    "server": "midscene",
+    "tool": "Input",
+    "arguments": {
+      "target": "密码输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 6,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "登录按钮"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 7,
+    "server": "midscene",
+    "tool": "Sleep",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 8,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "左上角菜单图标"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 9,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "左侧菜单\"开放平台\"选项"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 10,
+    "server": "midscene",
+    "tool": "Sleep",
+    "arguments": {},
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 11,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "左侧菜单\"插件管理\"选项"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 12,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "左侧菜单\"自建插件\"选项"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 13,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 14,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件名称"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 15,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 16,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 17,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 18,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 19,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 20,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 21,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 22,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 23,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 24,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 25,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 26,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "未命名插件行的操作按钮（三个点）"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 27,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "顶部导航栏的\"插件属性\"tab"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 28,
+    "server": "midscene",
+    "tool": "Tap",
+    "arguments": {
+      "target": "插件概述输入框"
+    },
+    "status": "completed",
+    "error": null
+  },
+  {
+    "sequence": 29,
+    "server": "midscene",
+    "tool": "Input",
+    "arguments": {
+      "target": "插件概述输入框"
+    },
+    "status": "completed",
+    "error": null
+  }
+]

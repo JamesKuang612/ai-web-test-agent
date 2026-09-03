@@ -167,7 +167,7 @@ button:disabled { cursor: not-allowed; opacity: 0.42; transform: none !important
 .model-controls label { margin: 0; color: var(--muted); font-size: 10px; text-align: left; }
 .model-controls select { min-width: 150px; margin-top: 5px; }
 .panel { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); }
-.metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 11px; margin-bottom: 16px; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 11px; margin-bottom: 16px; }
 .metric { padding: 15px 16px; border: 1px solid var(--line); border-radius: 11px; background: #fbfcfa; }
 .metric > span { display: block; margin-bottom: 8px; color: var(--muted); font-size: 10px; }
 .metric strong { display: block; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
@@ -175,6 +175,7 @@ button:disabled { cursor: not-allowed; opacity: 0.42; transform: none !important
 pre { margin: 11px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.7 "Cascadia Code", Consolas, monospace; }
 .instruction-panel pre { color: #39423d; }
 .result-panel pre { color: var(--accent); }
+.report-link { display: inline-block; margin-top: 12px; color: var(--accent); font-size: 12px; font-weight: 700; }
 
 .assets { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 .assets.single { grid-template-columns: 1fr; }
@@ -223,6 +224,7 @@ textarea { resize: vertical; line-height: 1.65; }
 select { cursor: pointer; }
 input:focus, textarea:focus, select:focus { border-color: #78a58f; box-shadow: 0 0 0 3px var(--accent-soft); background: white; }
 .dialog-model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.disabled-controls { opacity: 0.42; }
 .hint { margin-top: 10px; color: var(--muted); font-size: 11px; line-height: 1.5; }
 .dialog-actions { margin-top: 22px; display: flex; justify-content: flex-end; gap: 9px; }
 

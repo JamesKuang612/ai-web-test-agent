@@ -16,9 +16,16 @@ import {
   type AssetRecord,
   type AgentConfig,
   type CaseManifest,
+  type ExploreStrategy,
   type RunMode,
   type RunRecord,
 } from './core.js';
+import {
+  exploreWithMidscene,
+  DEFAULT_MIDSCENE_STEP_LIMIT,
+  MIDSCENE_MODEL,
+  type MidsceneExploreResult,
+} from './midscene.js';
 import { printTrace } from './trace.js';
 
 /** 返回指定 CLI 选项后面的值。 */
@@ -66,6 +73,42 @@ function configFrom(args: string[]): AgentConfig {
   return agentConfig(option(args, '--model'), option(args, '--reasoning'));
 }
 
+/** 从命令行读取独立探索方式，默认保持原有 Codex 行为。 */
+function strategyFrom(args: string[]): ExploreStrategy {
+  const strategy = option(args, '--strategy') ?? 'codex-only';
+  if (!['codex-only', 'midscene-only'].includes(strategy)) {
+    throw new Error('--strategy 必须是 codex-only 或 midscene-only。');
+  }
+  return strategy as ExploreStrategy;
+}
+
+/** 从命令行读取并校验 Midscene 快速探索的规划次数上限。 */
+function midsceneStepLimitFrom(args: string[]): number {
+  const raw = option(args, '--steps');
+  const value = raw === null ? DEFAULT_MIDSCENE_STEP_LIMIT : Number(raw);
+  if (!Number.isInteger(value) || value < 1 || value > 100) {
+    throw new Error('--steps 必须是 1 到 100 之间的整数。');
+  }
+  return value;
+}
+
+/** 将 Midscene 结果压缩为适合写入 manifest 的快速探索记录。 */
+function fastPathRecord(result: MidsceneExploreResult, stepLimit: number): NonNullable<
+  NonNullable<CaseManifest['explore']>['fastPath']
+> {
+  return {
+    status: result.status,
+    durationMs: result.durationMs,
+    model: MIDSCENE_MODEL,
+    stepLimit,
+    reportFile: result.reportFile,
+    actions: result.actions,
+    modelCalls: result.modelCalls,
+    modelTimeMs: result.modelTimeMs,
+    error: result.error,
+  };
+}
+
 /** 对 Codex 已经写入的脚本执行独立 Fresh Validation。 */
 async function validateGeneratedScript(
   paths: ReturnType<typeof getCasePaths>,
@@ -91,6 +134,8 @@ async function performExplore(
   caseId: string,
   instruction: string,
   config: AgentConfig,
+  strategy: ExploreStrategy,
+  midsceneStepLimit: number,
 ): Promise<void> {
   const paths = getCasePaths(caseId);
   await createCaseDirectories(paths);
@@ -100,7 +145,40 @@ async function performExplore(
 
   try {
     console.log(`[创建并探索] ${caseId}`);
-    console.log(`[模型配置] ${config.model} / ${config.reasoningEffort}`);
+    console.log(`[探索方式] ${strategy === 'midscene-only' ? '快速探索（Midscene）' : '正常探索（Codex）'}`);
+    if (strategy === 'midscene-only') {
+      console.log(`[快速探索] ${MIDSCENE_MODEL} / 最多 ${midsceneStepLimit} 次规划`);
+      const fastPath = await exploreWithMidscene(instruction, caseId, midsceneStepLimit);
+      console.log(
+        `[快速探索结果] ${fastPath.status} / ${(fastPath.durationMs / 1000).toFixed(1)} 秒 / ${fastPath.actions} 个动作 / ${fastPath.modelCalls} 次模型调用`,
+      );
+      if (fastPath.reportFile) console.log(`[Midscene 报告] ${fastPath.reportFile}`);
+      await writeJson(paths.rawTrace, fastPath.trace);
+      manifest.threadId = null;
+      manifest.explore = {
+        status: fastPath.status,
+        durationMs: fastPath.durationMs,
+        finalResponse: fastPath.finalResponse,
+        traceFile: 'raw-trace.json',
+        mcpCalls: 0,
+        agentConfig: null,
+        engine: 'midscene',
+        strategy,
+        fastPath: fastPathRecord(fastPath, midsceneStepLimit),
+      };
+      console.log(`\n[探索结果]\n${fastPath.finalResponse}`);
+      if (fastPath.status === 'PASS') {
+        manifest.pipelineStatus = 'EXPLORED';
+        manifest.pipelineError = null;
+        await saveManifest(paths, manifest);
+        console.log('\n[提示] 本次只运行 Midscene，没有创建 Codex 会话。');
+        console.log(`\n[探索完成] ${paths.directory}`);
+        return;
+      }
+      throw new Error('Midscene 快速探索未通过，不会自动转入 Codex。');
+    }
+
+    console.log(`[Codex 模型配置] ${config.model} / ${config.reasoningEffort}`);
     console.log('[探索] 创建新的 Codex thread');
     const explored = await explore(instruction, config);
     await writeJson(paths.rawTrace, explored.trace);
@@ -112,6 +190,9 @@ async function performExplore(
       traceFile: 'raw-trace.json',
       mcpCalls: explored.trace.length,
       agentConfig: config,
+      engine: 'codex',
+      strategy,
+      fastPath: null,
     };
     printTrace(explored.items);
     console.log(`\n[探索结果]\n${explored.finalResponse}`);
@@ -138,7 +219,13 @@ async function exploreCommand(args: string[]): Promise<void> {
   const instructionFile = path.resolve(requiredOption(args, '--instruction'));
   const instruction = (await readFile(instructionFile, 'utf8')).trim();
   if (!instruction) throw new Error('instruction 文件不能为空。');
-  await performExplore(caseId, instruction, configFrom(args));
+  await performExplore(
+    caseId,
+    instruction,
+    configFrom(args),
+    strategyFrom(args),
+    midsceneStepLimitFrom(args),
+  );
 }
 
 /** 恢复原探索会话，让 Codex 自主产出并验证唯一的 Playwright 脚本。 */
@@ -149,7 +236,7 @@ async function performGenerate(caseId: string, config: AgentConfig): Promise<voi
     throw new Error('只有探索成功的测试用例才能生成 Playwright 脚本。');
   }
 
-  manifest.version = 4;
+  manifest.version = 5;
   manifest.script = {
     file: 'playwright.spec.ts',
     status: 'GENERATING',
@@ -258,7 +345,7 @@ async function runCommand(args: string[]): Promise<void> {
 /** 输出 CLI 的最小用法。 */
 function printUsage(): void {
   console.log(`用法：
-  npm start -- explore --case <id> --instruction <file> [--model <model>] [--reasoning <level>]
+  npm start -- explore --case <id> --instruction <file> [--strategy <codex-only|midscene-only>] [--steps <1-100>] [--model <model>] [--reasoning <level>]
   npm start -- generate --case <id> [--model <model>] [--reasoning <level>]
   npm start -- run --case <id> --mode <agent|script>`);
 }

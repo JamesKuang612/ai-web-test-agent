@@ -1,0 +1,4 @@
+3.2.初始URL：https://test.jdydevelop.com/dashboard#/
+账密：1875931049@qq.com/Jdy123456
+测试步骤：
+1.在搜索框搜“wudi”,如果没有搜索到则新建该应用。

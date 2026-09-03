@@ -1,0 +1,37 @@
+{
+  "version": 5,
+  "caseId": "case-20260903113506",
+  "originalInstruction": "3.2.初始URL：https://test.jdydevelop.com/dashboard#/\n账密：1875931049@qq.com/Jdy123456\n测试步骤：\n1.在搜索框搜“wudi”,如果没有搜索到则新建该应用。",
+  "createdAt": "2026-09-03T03:36:25.399Z",
+  "updatedAt": "2026-09-03T03:37:40.892Z",
+  "pipelineStatus": "FAILED",
+  "pipelineError": "Midscene 快速探索未通过，不会自动转入 Codex。",
+  "threadId": null,
+  "explore": {
+    "status": "FAIL",
+    "durationMs": 75489,
+    "finalResponse": "FAIL\nMidscene 快速探索未完成：Replanned 20 times, exceeding the limit. Please configure a larger value for replanningCycleLimit (or use MIDSCENE_REPLANNING_CYCLE_LIMIT) to handle more complex tasks.",
+    "traceFile": "raw-trace.json",
+    "mcpCalls": 0,
+    "agentConfig": null,
+    "engine": "midscene",
+    "strategy": "midscene-only",
+    "fastPath": {
+      "status": "FAIL",
+      "durationMs": 75489,
+      "model": "deepseek-v4-flash-vision-exp",
+      "reportFile": "midscene_run/report/fast-case-20260903113506-1788406586418.html",
+      "actions": 21,
+      "modelCalls": 21,
+      "modelTimeMs": 39938,
+      "error": "Replanned 20 times, exceeding the limit. Please configure a larger value for replanningCycleLimit (or use MIDSCENE_REPLANNING_CYCLE_LIMIT) to handle more complex tasks."
+    }
+  },
+  "script": {
+    "file": "playwright.spec.ts",
+    "status": "PENDING",
+    "agentConfig": null,
+    "validation": null
+  },
+  "runs": []
+}
